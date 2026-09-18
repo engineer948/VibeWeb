@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMaker — Sadə və Təbii</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #faf9f6; /* Warm off-white / natural paper */
+            --text-main: #2c312d; /* Soft dark slate/greenish gray */
+            --text-muted: #6b7270;
+            --accent: #5e6b55; /* Earthy natural green */
+            --accent-hover: #4a5443;
+            --card-bg: #ffffff;
+            --border: #e6e4de;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Nav */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .btn {
+            padding: 10px 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--text-main);
+            color: #fff;
+            border: 1px solid var(--text-main);
+        }
+        .btn-primary:hover {
+            background: #1a1e1b;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            background: rgba(0,0,0,0.03);
+            border-color: #d0cec5;
+        }
+
+        /* Hero */
+        .hero {
+            max-width: 800px;
+            margin: 100px auto 60px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+            color: var(--text-main);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 540px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        /* Showcase */
+        .showcase {
+            max-width: 1000px;
+            margin: 0 auto 100px;
+            padding: 0 20px;
+        }
+        .showcase img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            display: block;
+        }
+
+        /* Features */
+        .features {
+            max-width: 1100px;
+            margin: 0 auto 100px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: border-color 0.3s;
+        }
+        
+        .feature:hover {
+            border-color: #d0cec5;
+        }
+
+        .feature i {
+            font-size: 1.4rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .feature h3 {
+            font-size: 1.15rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .feature p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.4rem; }
+            .hero-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <i class="fas fa-leaf"></i> WebMaker
+        </div>
+        <div>
+            <a href="https://github.com/webmaker" class="btn btn-secondary" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>Veb sayt yaratmağın ən təbii yolu.</h1>
+        <p>Hər hansı bir kod yazmadan, sadəcə sürükləyib buraxaraq xəyalınızdakı veb saytları ərsəyə gətirin. Sadə, təmiz və sürətli.</p>
+        
+        <div class="hero-actions">
+            <a href="index.html" class="btn btn-primary">Layihəyə başla</a>
+            <a href="https://github.com/webmaker" class="btn btn-secondary" target="_blank">Açıq mənbə kodu</a>
+        </div>
+    </header>
+
+    <div class="showcase">
+        <!-- Mockup şəkli -->
+        <img src="/home/user/.gemini/antigravity-ide/brain/b833ede4-2fa3-4885-9f13-80aba0bffb5d/webmaker_app_mockup_1789766311584.jpg" alt="WebMaker App Interface">
+    </div>
+
+    <section class="features">
+        <div class="feature">
+            <i class="fas fa-hand-paper"></i>
+            <h3>Sadə toxunuşlar</h3>
+            <p>Hər şey kətan (canvas) üzərində gözünüzün önündə baş verir. Elementləri istədiyiniz yerə yerləşdirin və təbii şəkildə formalaşdırın.</p>
+        </div>
+        <div class="feature">
+            <i class="fas fa-palette"></i>
+            <h3>Rəngləndirin</h3>
+            <p>Yuxarıdakı fırça və doldurma alətləri ilə detalları asanlıqla rəngləndirin. Eynilə bir rəsm əsəri yaradır mış kimi.</p>
+        </div>
+        <div class="feature">
+            <i class="fas fa-code"></i>
+            <h3>Təmiz kod</h3>
+            <p>Vizual dizaynınız arxa planda təmiz, oxunaqlı və yüngül HTML/CSS kodlarına çevrilir. Tək kliklə kopyalayıb istifadə edin.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 WebMaker layihəsi. Sadəlik üçün dizayn edildi.</p>
+    </footer>
+
+</body>
+</html>
