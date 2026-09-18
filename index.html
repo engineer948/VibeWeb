@@ -1,0 +1,3468 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebMaker - Vizual drag-and-drop veb-sayt düzəldici. Kod yazmadan öz saytını qur.">
+    <title>WebMaker — Vizual Veb-Sayt Düzəldici</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* ============================================
+           DESIGN TOKENS
+           ============================================ */
+        :root {
+            --bg-app: #0a0a14;
+            --bg-panel: #0f0f1e;
+            --bg-panel-alt: #12122a;
+            --bg-surface: #181835;
+            --bg-hover: #1e1e40;
+            --bg-active: rgba(139, 92, 246, 0.12);
+            --bg-canvas: #1a1a2e;
+            --bg-canvas-grid: rgba(255,255,255,0.02);
+
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.12);
+            --border-active: rgba(139, 92, 246, 0.5);
+
+            --text-primary: #eeeef8;
+            --text-secondary: #8888aa;
+            --text-muted: #555577;
+            --text-inverse: #0a0a14;
+
+            --purple: #8b5cf6;
+            --purple-light: #a78bfa;
+            --purple-dark: #6d28d9;
+            --cyan: #06b6d4;
+            --pink: #ec4899;
+            --green: #10b981;
+            --red: #ef4444;
+            --orange: #f59e0b;
+            --blue: #3b82f6;
+
+            --gradient-brand: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            --gradient-btn: linear-gradient(135deg, #8b5cf6, #7c3aed);
+
+            --radius-xs: 4px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.2);
+
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+            --toolbar-h: 48px;
+            --sidebar-w: 260px;
+            --props-w: 280px;
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        *, *::before, *::after {
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg-app);
+            color: var(--text-primary);
+            font-size: 13px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { border: none; cursor: pointer; font-family: var(--font); outline: none; background: transparent; color: var(--text-primary); }
+        input, select, textarea { font-family: var(--font); outline: none; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+        /* ============================================
+           APP LAYOUT
+           ============================================ */
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* ============================================
+           TOOLBAR
+           ============================================ */
+        .toolbar {
+            height: var(--toolbar-h);
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .toolbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-right: 16px;
+            border-right: 1px solid var(--border);
+            margin-right: 8px;
+        }
+
+        .toolbar-brand .logo {
+            width: 28px; height: 28px;
+            background: var(--gradient-brand);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; color: white; font-weight: 800;
+        }
+
+        .toolbar-brand span {
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: -0.3px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 0 6px;
+        }
+
+        .toolbar-group + .toolbar-group {
+            border-left: 1px solid var(--border);
+            padding-left: 12px;
+            margin-left: 4px;
+        }
+
+        .toolbar-btn {
+            width: 34px; height: 34px;
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            transition: background var(--transition), color var(--transition);
+            position: relative;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .toolbar-btn.active {
+            background: var(--bg-active);
+            color: var(--purple);
+        }
+
+        .toolbar-btn[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            padding: 4px 10px;
+            border-radius: var(--radius-xs);
+            font-size: 0.7rem;
+            white-space: nowrap;
+            z-index: 999;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            pointer-events: none;
+        }
+
+        .toolbar-spacer { flex: 1; }
+
+        .toolbar-text-btn {
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: flex; align-items: center; gap: 6px;
+            transition: background var(--transition), color var(--transition);
+            color: var(--text-secondary);
+        }
+
+        .toolbar-text-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .toolbar-text-btn.primary {
+            background: var(--gradient-btn);
+            color: white;
+            box-shadow: 0 2px 12px rgba(139, 92, 246, 0.25);
+        }
+
+        .toolbar-text-btn.primary:hover {
+            box-shadow: 0 4px 18px rgba(139, 92, 246, 0.4);
+        }
+
+        .toolbar-device-group {
+            display: flex;
+            background: var(--bg-surface);
+            border-radius: var(--radius-sm);
+            padding: 2px;
+        }
+
+        .toolbar-device-group .toolbar-btn {
+            width: 30px; height: 28px;
+            font-size: 0.75rem;
+            border-radius: var(--radius-xs);
+        }
+
+        .toolbar-device-group .toolbar-btn.active {
+            background: var(--purple);
+            color: white;
+        }
+
+        .toolbar-zoom {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .toolbar-zoom span {
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .toolbar-zoom .toolbar-btn {
+            width: 24px; height: 24px;
+            font-size: 0.65rem;
+        }
+
+        /* ============================================
+           WORKSPACE
+           ============================================ */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ============================================
+           LEFT SIDEBAR — COMPONENT PANEL
+           ============================================ */
+        .sidebar-left {
+            width: var(--sidebar-w);
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .sidebar-tab {
+            flex: 1;
+            padding: 10px 0;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            text-align: center;
+            transition: color var(--transition), border-color var(--transition);
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .sidebar-tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .sidebar-tab.active {
+            color: var(--purple);
+            border-bottom-color: var(--purple);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            padding: 8px 4px 8px;
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .component-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 8px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: grab;
+            transition: background var(--transition), border-color var(--transition), transform var(--transition);
+            user-select: none;
+        }
+
+        .component-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+        }
+
+        .component-item:active {
+            cursor: grabbing;
+            transform: scale(0.97);
+            border-color: var(--purple);
+        }
+
+        .component-item i {
+            font-size: 1.2rem;
+            color: var(--purple-light);
+        }
+
+        .component-item span {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        /* Section blocks */
+        .section-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: grab;
+            transition: background var(--transition), border-color var(--transition);
+            margin-bottom: 6px;
+            user-select: none;
+        }
+
+        .section-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-hover);
+        }
+
+        .section-item:active {
+            cursor: grabbing;
+            border-color: var(--purple);
+        }
+
+        .section-item i {
+            font-size: 0.9rem;
+            color: var(--cyan);
+            width: 20px;
+            text-align: center;
+        }
+
+        .section-item .section-info {
+            flex: 1;
+        }
+
+        .section-item .section-info strong {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .section-item .section-info span {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+        }
+
+        /* Layers panel */
+        .layer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background var(--transition);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        .layer-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .layer-item.active {
+            background: var(--bg-active);
+            color: var(--purple);
+        }
+
+        .layer-item i {
+            font-size: 0.7rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        .layer-item .layer-name {
+            flex: 1;
+        }
+
+        .layer-item .layer-visibility {
+            opacity: 0;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            transition: opacity var(--transition);
+        }
+
+        .layer-item:hover .layer-visibility {
+            opacity: 1;
+        }
+
+        /* ============================================
+           CANVAS AREA
+           ============================================ */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-app);
+            overflow: auto;
+            position: relative;
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        .canvas-frame {
+            position: relative;
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .canvas-frame.desktop {
+            width: 1200px;
+        }
+
+        .canvas-frame.tablet {
+            width: 768px;
+        }
+
+        .canvas-frame.mobile {
+            width: 375px;
+        }
+
+        .canvas-viewport {
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Drop zone styling */
+        .drop-zone {
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: min-height var(--transition);
+            padding-bottom: 350px;
+        }
+
+        .drop-zone.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+        }
+
+        .drop-zone.empty::after {
+            content: attr(data-empty-text);
+            color: #999;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 40px;
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(139, 92, 246, 0.04);
+        }
+
+        .drop-indicator {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--purple);
+            border-radius: 2px;
+            z-index: 10;
+            pointer-events: none;
+            display: none;
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Canvas Elements */
+        .canvas-element {
+            position: relative;
+            transition: box-shadow 0.15s ease;
+            cursor: pointer;
+        }
+
+        .canvas-element:hover {
+            outline: 2px solid rgba(139, 92, 246, 0.4);
+            outline-offset: -2px;
+        }
+
+        .canvas-element.selected {
+            outline: 2px solid var(--purple);
+            outline-offset: -2px;
+        }
+
+        .canvas-element.selected::before {
+            content: attr(data-label);
+            position: absolute;
+            top: -22px;
+            left: 0;
+            background: var(--purple);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px 4px 0 0;
+            font-size: 0.6rem;
+            font-weight: 600;
+            font-family: var(--font);
+            z-index: 5;
+            white-space: nowrap;
+        }
+
+        .element-actions {
+            position: absolute;
+            top: -22px;
+            right: 0;
+            display: none;
+            gap: 2px;
+            z-index: 5;
+        }
+
+        .canvas-element.selected .element-actions {
+            display: flex;
+        }
+
+        .element-action-btn {
+            width: 20px; height: 20px;
+            background: var(--purple);
+            border: none;
+            border-radius: 3px;
+            color: white;
+            font-size: 0.55rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: background var(--transition);
+        }
+
+        .element-action-btn:hover {
+            background: var(--purple-dark);
+        }
+
+        .resize-handle {
+            position: absolute;
+            width: 12px; height: 12px;
+            background: var(--purple);
+            border: 2px solid white;
+            border-radius: 50%;
+            z-index: 10;
+            display: none;
+        }
+        .canvas-element.selected > .resize-handle {
+            display: block;
+        }
+        .resize-handle.se {
+            bottom: -6px; right: -6px;
+            cursor: se-resize;
+        }
+        .resize-handle.e {
+            top: 50%; right: -6px;
+            transform: translateY(-50%);
+            cursor: e-resize;
+        }
+        .resize-handle.s {
+            bottom: -6px; left: 50%;
+            transform: translateX(-50%);
+            cursor: s-resize;
+        }
+
+        .canvas-element > div:not(.element-actions):not(.resize-handle) {
+            width: 100%;
+            height: 100%;
+        }
+
+        .element-action-btn.delete:hover {
+            background: var(--red);
+        }
+
+        /* Element type specific styles */
+        .canvas-element {
+            box-sizing: border-box;
+        }
+
+        .canvas-element > div:not(.element-actions):not(.resize-handle) {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .el-heading {
+            padding: 0.8em 1.2em;
+            font-family: var(--font);
+            box-sizing: border-box;
+        }
+
+        .el-heading h1 { font-size: 2.2em; font-weight: 800; color: inherit; line-height: 1.2; margin: 0; }
+        .el-heading h2 { font-size: 1.7em; font-weight: 700; color: inherit; line-height: 1.3; margin: 0; }
+        .el-heading h3 { font-size: 1.3em; font-weight: 600; color: inherit; line-height: 1.4; margin: 0; }
+
+        .el-paragraph {
+            padding: 0.6em 1.2em;
+            font-size: 1em;
+            line-height: 1.6;
+            color: inherit;
+            font-family: var(--font);
+            box-sizing: border-box;
+        }
+
+        .el-button-wrap {
+            padding: 0.6em 1.2em;
+            box-sizing: border-box;
+        }
+
+        .el-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5em;
+            padding: 0.65em 1.5em;
+            background: var(--purple);
+            color: white;
+            border: none;
+            border-radius: 0.5em;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--font);
+            max-width: 100%;
+        }
+
+        .el-image-wrap {
+            padding: 0.6em 1.2em;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .el-image-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .el-image-placeholder {
+            width: 100%;
+            height: 100%;
+            min-height: 50px;
+            background: linear-gradient(135deg, #f0f0f5, #e8e8f0);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5em;
+            color: #999;
+            font-size: 0.85em;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .el-image-placeholder i { font-size: 2em; color: #bbb; }
+
+        .el-image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .el-divider {
+            padding: 0.5em 1.2em;
+            box-sizing: border-box;
+        }
+
+        .el-divider hr {
+            border: none;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .el-spacer {
+            height: 40px;
+        }
+
+        .el-video-wrap {
+            padding: 0.6em 1.2em;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .el-video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 150px;
+            background: #111;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .el-video-container iframe,
+        .el-video-container video {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        .el-video-placeholder {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5em;
+            color: #888;
+            font-size: 0.85em;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        .el-video-placeholder i { font-size: 2.5em; color: #666; }
+
+        .el-columns {
+            display: grid;
+            gap: 1em;
+            padding: 0.6em 1.2em;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+        }
+
+        .el-columns.cols-2 { grid-template-columns: 1fr 1fr; }
+        .el-columns.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .el-columns.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+        .el-column {
+            min-height: 60px;
+            border: 2px dashed #e0e0e5;
+            border-radius: 8px;
+            padding: 0.8em;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .el-column.drag-over {
+            border-color: var(--purple);
+            background: rgba(139,92,246,0.03);
+        }
+
+        .el-column.empty::after {
+            content: attr(data-empty-text);
+            color: #bbb;
+            font-size: 0.75em;
+            text-align: center;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Hero section template */
+        .el-hero {
+            padding: 2.5em 1.8em;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: inherit;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .el-hero h1 {
+            font-size: 2.4em;
+            font-weight: 800;
+            margin-bottom: 0.5em;
+            color: inherit;
+            line-height: 1.2;
+        }
+
+        .el-hero p {
+            font-size: 1.05em;
+            opacity: 0.9;
+            margin-bottom: 1em;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            color: inherit;
+            line-height: 1.5;
+        }
+
+        .el-hero .el-button {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Nav template */
+        .el-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1em 1.8em;
+            border-bottom: 1px solid #eee;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .el-nav-brand {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: inherit;
+        }
+
+        .el-nav-links {
+            display: flex;
+            gap: 1.5em;
+        }
+
+        .el-nav-links a {
+            font-size: 0.9em;
+            color: inherit;
+            font-weight: 500;
+        }
+
+        /* Card grid template */
+        .el-card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2em;
+            padding: 1.2em;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .el-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .el-card-img {
+            height: 8em;
+            min-height: 50px;
+            background: linear-gradient(135deg, #f0f0f5, #e0e0ea);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bbb;
+            font-size: 1.5em;
+            overflow: hidden;
+        }
+
+        .el-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .el-card-body {
+            padding: 0.8em;
+            flex: 1;
+        }
+
+        .el-card-body h3 {
+            font-size: 1.05em;
+            font-weight: 700;
+            margin-bottom: 0.3em;
+            color: #222;
+        }
+
+        .el-card-body p {
+            font-size: 0.85em;
+            color: #777;
+            line-height: 1.4;
+        }
+
+        /* Footer template */
+        .el-footer {
+            background: #111;
+            color: #aaa;
+            padding: 2em 1.8em 1.2em;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .el-footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr;
+            gap: 1.8em;
+            margin-bottom: 1.8em;
+        }
+
+        .el-footer h4 {
+            color: white;
+            font-size: 0.9em;
+            margin-bottom: 0.6em;
+        }
+
+        .el-footer a {
+            display: block;
+            color: #888;
+            font-size: 0.82em;
+            padding: 0.2em 0;
+        }
+
+        .el-footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 1em;
+            font-size: 0.78em;
+            text-align: center;
+        }
+
+        .el-list {
+            padding: 0.75em 1.5em;
+            box-sizing: border-box;
+        }
+
+        .el-list ul {
+            padding-left: 1.5em;
+            list-style: disc;
+        }
+
+        .el-list ul li {
+            padding: 0.25em 0;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        /* ============================================
+           RIGHT SIDEBAR — PROPERTIES PANEL
+           ============================================ */
+        .sidebar-right {
+            width: var(--props-w);
+            background: var(--bg-panel);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .props-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .props-header i {
+            color: var(--purple);
+        }
+
+        .props-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .props-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            text-align: center;
+            gap: 12px;
+            padding: 24px;
+        }
+
+        .props-empty i {
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+
+        .prop-group {
+            margin-bottom: 16px;
+        }
+
+        .prop-group-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            padding: 4px 0 8px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+
+        .prop-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .prop-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 70px;
+            flex-shrink: 0;
+        }
+
+        .prop-input {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            transition: border-color var(--transition);
+        }
+
+        .prop-input:focus {
+            border-color: var(--purple);
+        }
+
+        .prop-input-sm {
+            width: 60px;
+            padding: 5px 8px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            text-align: center;
+            transition: border-color var(--transition);
+        }
+
+        .prop-input-sm:focus {
+            border-color: var(--purple);
+        }
+
+        .prop-select {
+            flex: 1;
+            padding: 6px 10px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            transition: border-color var(--transition);
+            cursor: pointer;
+        }
+
+        .prop-select:focus {
+            border-color: var(--purple);
+        }
+
+        .prop-color-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .prop-color-input {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            padding: 0;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .prop-color-input::-webkit-color-swatch-wrapper { padding: 0; }
+        .prop-color-input::-webkit-color-swatch { border: none; border-radius: 3px; }
+
+        .prop-textarea {
+            width: 100%;
+            padding: 8px 10px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            resize: vertical;
+            min-height: 60px;
+            transition: border-color var(--transition);
+        }
+
+        .prop-textarea:focus {
+            border-color: var(--purple);
+        }
+
+        .prop-btn {
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background var(--transition), border-color var(--transition), color var(--transition);
+            margin-bottom: 6px;
+        }
+
+        .prop-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .prop-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .prop-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .prop-toggle {
+            width: 36px;
+            height: 20px;
+            background: var(--bg-surface);
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: background var(--transition);
+        }
+
+        .prop-toggle.active {
+            background: var(--purple);
+            border-color: var(--purple);
+        }
+
+        .prop-toggle::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform var(--transition);
+        }
+
+        .prop-toggle.active::after {
+            transform: translateX(16px);
+        }
+
+        /* Alignment buttons */
+        .align-group {
+            display: flex;
+            gap: 2px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-sm);
+            padding: 2px;
+        }
+
+        .align-btn {
+            width: 30px;
+            height: 28px;
+            border-radius: var(--radius-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .align-btn:hover {
+            color: var(--text-secondary);
+            background: var(--bg-hover);
+        }
+
+        .align-btn.active {
+            background: var(--purple);
+            color: white;
+        }
+
+        /* ============================================
+           EXPORT MODAL
+           ============================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.95) translateY(10px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 32px; height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted);
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-body pre {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            overflow-x: auto;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            font-family: 'Fira Code', 'Consolas', monospace;
+            max-height: 400px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .modal-btn {
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: background var(--transition);
+        }
+
+        .modal-btn.ghost {
+            color: var(--text-secondary);
+        }
+
+        .modal-btn.ghost:hover {
+            background: var(--bg-hover);
+        }
+
+        .modal-btn.primary {
+            background: var(--gradient-btn);
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* ============================================
+           PREVIEW OVERLAY
+           ============================================ */
+        .preview-overlay {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            z-index: 3000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .preview-overlay.active {
+            display: flex;
+        }
+
+        .preview-toolbar {
+            height: 44px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            flex-shrink: 0;
+        }
+
+        .preview-toolbar span {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .preview-frame {
+            flex: 1;
+            overflow: auto;
+            background: white;
+        }
+
+        .preview-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-primary);
+            z-index: 5000;
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast i { color: var(--green); }
+
+        /* ============================================
+           CONTEXT MENU
+           ============================================ */
+        .context-menu {
+            position: fixed;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            min-width: 160px;
+            box-shadow: var(--shadow-lg);
+            z-index: 4000;
+            display: none;
+        }
+
+        .context-menu.active {
+            display: block;
+        }
+
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: var(--radius-xs);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .context-menu-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .context-menu-item.danger:hover {
+            background: rgba(239,68,68,0.1);
+            color: var(--red);
+        }
+
+        .context-menu-item i {
+            width: 16px;
+            text-align: center;
+            font-size: 0.72rem;
+        }
+
+        .context-menu-item .shortcut {
+            margin-left: auto;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .context-menu-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 0;
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1200px) {
+            .sidebar-right {
+                width: 240px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar-left {
+                width: 220px;
+            }
+            .sidebar-right {
+                display: none;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar-left {
+                display: none;
+            }
+            .toolbar-brand span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== APP ========== -->
+    <div class="app" id="app">
+
+        <!-- ===== TOOLBAR ===== -->
+        <div class="toolbar" id="toolbar">
+            <div class="toolbar-brand">
+                <div class="logo"><i class="fas fa-code"></i></div>
+                <span>WebMaker</span>
+                <div class="lang-switcher" style="display:inline-flex;background:rgba(255,255,255,0.08);border-radius:6px;padding:2px;gap:2px;margin-left:8px;">
+                    <button class="lang-btn active" id="btnLangEn" style="border:none;padding:3px 8px;font-size:0.75rem;font-weight:700;border-radius:4px;cursor:pointer;background:#8b5cf6;color:white;">EN</button>
+                    <button class="lang-btn" id="btnLangSv" style="border:none;padding:3px 8px;font-size:0.75rem;font-weight:700;border-radius:4px;cursor:pointer;background:transparent;color:#94a3b8;">SV</button>
+                </div>
+            </div>
+
+            <div class="toolbar-group">
+                <button class="toolbar-btn" id="btnUndo" data-i18n-tooltip="btn_undo" data-tooltip="Undo (Ctrl+Z)">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button class="toolbar-btn" id="btnRedo" data-i18n-tooltip="btn_redo" data-tooltip="Redo (Ctrl+Y)">
+                    <i class="fas fa-redo"></i>
+                </button>
+            </div>
+
+            <div class="toolbar-group">
+                <div class="toolbar-device-group" id="deviceGroup">
+                    <button class="toolbar-btn active" data-device="desktop" data-i18n-tooltip="device_desktop" data-tooltip="Desktop">
+                        <i class="fas fa-desktop"></i>
+                    </button>
+                    <button class="toolbar-btn" data-device="tablet" data-i18n-tooltip="device_tablet" data-tooltip="Tablet">
+                        <i class="fas fa-tablet-alt"></i>
+                    </button>
+                    <button class="toolbar-btn" data-device="mobile" data-i18n-tooltip="device_mobile" data-tooltip="Mobile">
+                        <i class="fas fa-mobile-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="toolbar-group">
+                <div class="toolbar-zoom">
+                    <button class="toolbar-btn" id="btnZoomOut"><i class="fas fa-minus"></i></button>
+                    <span id="zoomLevel">100%</span>
+                    <button class="toolbar-btn" id="btnZoomIn"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+
+            <div class="toolbar-spacer"></div>
+            
+            <div class="toolbar-group" id="paintTools">
+                <button class="toolbar-btn active" data-tool="cursor" data-i18n-tooltip="tool_cursor" data-tooltip="Select (Cursor)"><i class="fas fa-mouse-pointer"></i></button>
+                <button class="toolbar-btn" data-tool="bucket" data-i18n-tooltip="tool_bucket" data-tooltip="Fill Background"><i class="fas fa-fill-drip"></i></button>
+                <button class="toolbar-btn" data-tool="brush" data-i18n-tooltip="tool_brush" data-tooltip="Color Text"><i class="fas fa-paint-brush"></i></button>
+                <button class="toolbar-btn" data-tool="eraser" data-i18n-tooltip="tool_eraser" data-tooltip="Delete (Click)"><i class="fas fa-eraser"></i></button>
+                <input type="color" id="paintColor" value="#8b5cf6" style="width:28px;height:28px;border:none;border-radius:4px;cursor:pointer;background:transparent;" data-i18n-tooltip="tool_color" data-tooltip="Pick Color">
+            </div>
+
+            <div class="toolbar-spacer"></div>
+
+            <button class="toolbar-text-btn" id="btnPreview" data-i18n="btn_preview">
+                <i class="fas fa-eye"></i> Preview
+            </button>
+            <button class="toolbar-text-btn" id="btnExport" data-i18n="btn_export">
+                <i class="fas fa-code"></i> Export
+            </button>
+            <button class="toolbar-text-btn primary" id="btnSave" data-i18n="btn_save">
+                <i class="fas fa-download"></i> Save
+            </button>
+        </div>
+
+        <!-- ===== WORKSPACE ===== -->
+        <div class="workspace">
+
+            <!-- LEFT SIDEBAR -->
+            <div class="sidebar-left" id="sidebarLeft">
+                <div class="sidebar-tabs">
+                    <div class="sidebar-tab active" data-tab="elements" data-i18n="tab_elements">Elements</div>
+                    <div class="sidebar-tab" data-tab="sections" data-i18n="tab_sections">Sections</div>
+                    <div class="sidebar-tab" data-tab="layers" data-i18n="tab_layers">Layers</div>
+                </div>
+
+                <!-- Elements Tab -->
+                <div class="sidebar-content" id="tabElements">
+                    <div class="sidebar-section-title" data-i18n="sec_basic">Basic</div>
+                    <div class="component-grid">
+                        <div class="component-item" draggable="true" data-type="heading">
+                            <i class="fas fa-heading"></i>
+                            <span data-i18n="el_heading">Heading</span>
+                        </div>
+                        <div class="component-item" draggable="true" data-type="paragraph">
+                            <i class="fas fa-paragraph"></i>
+                            <span data-i18n="el_paragraph">Paragraph</span>
+                        </div>
+                        <div class="component-item" draggable="true" data-type="button">
+                            <i class="fas fa-square"></i>
+                            <span data-i18n="el_button">Button</span>
+                        </div>
+                        <div class="component-item" draggable="true" data-type="image">
+                            <i class="fas fa-image"></i>
+                            <span data-i18n="el_image">Image</span>
+                        </div>
+                        <div class="component-item" draggable="true" data-type="video">
+                            <i class="fas fa-video"></i>
+                            <span data-i18n="el_video">Video</span>
+                        </div>
+                        <div class="component-item" draggable="true" data-type="divider">
+                            <i class="fas fa-minus"></i>
+                            <span data-i18n="el_divider">Line</span>
+                        </div>
+                        <div class="component-item" draggable="true" data-type="spacer">
+                            <i class="fas fa-arrows-alt-v"></i>
+                            <span data-i18n="el_spacer">Spacer</span>
+                        </div>
+                        <div class="component-item" draggable="true" data-type="list">
+                            <i class="fas fa-list-ul"></i>
+                            <span data-i18n="el_list">List</span>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section-title" data-i18n="sec_layout">Layout</div>
+                    <div class="component-grid">
+                        <div class="component-item" draggable="true" data-type="columns-2">
+                            <i class="fas fa-columns"></i>
+                            <span data-i18n="el_col2">2 Columns</span>
+                        </div>
+                        <div class="component-item" draggable="true" data-type="columns-3">
+                            <i class="fas fa-th"></i>
+                            <span data-i18n="el_col3">3 Columns</span>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section-title" data-i18n="sec_widgets">Widgets</div>
+                    <div class="component-grid">
+                        <div class="component-item" draggable="true" data-type="theme-toggle">
+                            <i class="fas fa-moon"></i>
+                            <span data-i18n="el_theme_toggle">Night/Day Mode</span>
+                        </div>
+                        <div class="component-item" draggable="true" data-type="lang-picker">
+                            <i class="fas fa-globe"></i>
+                            <span data-i18n="el_lang_picker">Language Bar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sections Tab -->
+                <div class="sidebar-content" id="tabSections" style="display:none;">
+                    <div class="sidebar-section-title" data-i18n="sec_templates">Preset Sections</div>
+                    <div class="section-item" draggable="true" data-type="section-nav">
+                        <i class="fas fa-bars"></i>
+                        <div class="section-info">
+                            <strong data-i18n="el_nav">Navbar</strong>
+                            <span data-i18n="el_nav_desc">Logo + menu links</span>
+                        </div>
+                    </div>
+                    <div class="section-item" draggable="true" data-type="section-hero">
+                        <i class="fas fa-star"></i>
+                        <div class="section-info">
+                            <strong data-i18n="el_hero">Hero Section</strong>
+                            <span data-i18n="el_hero_desc">Heading + subtitle + CTA</span>
+                        </div>
+                    </div>
+                    <div class="section-item" draggable="true" data-type="section-cards">
+                        <i class="fas fa-th-large"></i>
+                        <div class="section-info">
+                            <strong data-i18n="el_cards">Card Grid</strong>
+                            <span data-i18n="el_cards_desc">3 cards layout</span>
+                        </div>
+                    </div>
+                    <div class="section-item" draggable="true" data-type="section-footer">
+                        <i class="fas fa-shoe-prints"></i>
+                        <div class="section-info">
+                            <strong data-i18n="el_footer">Footer</strong>
+                            <span data-i18n="el_footer_desc">4 columns footer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layers Tab -->
+                <div class="sidebar-content" id="tabLayers" style="display:none;">
+                    <div class="sidebar-section-title" data-i18n="sec_layers">Element Layers</div>
+                    <div id="layersList"></div>
+                </div>
+            </div>
+
+            <!-- CANVAS AREA -->
+            <div class="canvas-area" id="canvasArea">
+                <div class="canvas-frame desktop" id="canvasFrame">
+                    <div class="canvas-viewport" id="canvasViewport">
+                        <div class="drop-zone empty" id="dropZone">
+                            <div class="drop-indicator" id="dropIndicator"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDEBAR — PROPERTIES -->
+            <div class="sidebar-right" id="sidebarRight">
+                <div class="props-header">
+                    <i class="fas fa-sliders-h"></i>
+                    <span data-i18n="props_title">Properties</span>
+                </div>
+                <div class="props-body" id="propsBody">
+                    <div class="props-empty" id="propsEmpty">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <span data-i18n="props_empty">Click an element on canvas to edit properties</span>
+                    </div>
+                    <div id="propsContent" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPORT MODAL -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-code" style="color:var(--purple);margin-right:8px;"></i> <span data-i18n="export_title">Export HTML Code</span></h2>
+                <button class="modal-close" id="exportModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <pre id="exportCode"></pre>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn ghost" id="exportModalCancel" data-i18n="export_close">Close</button>
+                <button class="modal-btn primary" id="exportCopyBtn"><i class="fas fa-copy"></i> <span data-i18n="export_copy">Copy Code</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREVIEW OVERLAY -->
+    <div class="preview-overlay" id="previewOverlay">
+        <div class="preview-toolbar">
+            <span><i class="fas fa-eye" style="margin-right:6px;color:var(--purple)"></i> <span data-i18n="preview_title">Preview Mode</span></span>
+            <button class="toolbar-text-btn" id="previewClose"><i class="fas fa-times"></i> <span data-i18n="preview_close">Close</span></button>
+        </div>
+        <div class="preview-frame">
+            <iframe id="previewIframe" sandbox="allow-scripts"></iframe>
+        </div>
+    </div>
+
+    <!-- CONTEXT MENU -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" data-action="duplicate"><i class="fas fa-clone"></i> <span data-i18n="ctx_duplicate">Duplicate</span> <span class="shortcut">Ctrl+D</span></div>
+        <div class="context-menu-item" data-action="moveup"><i class="fas fa-arrow-up"></i> <span data-i18n="ctx_moveup">Move Up</span></div>
+        <div class="context-menu-item" data-action="movedown"><i class="fas fa-arrow-down"></i> <span data-i18n="ctx_movedown">Move Down</span></div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item danger" data-action="delete"><i class="fas fa-trash"></i> <span data-i18n="ctx_delete">Delete</span> <span class="shortcut">Del</span></div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg"></span>
+    </div>
+
+    <!-- ====================================================================
+         JAVASCRIPT — FULL WEBSITE MAKER ENGINE
+         ==================================================================== -->
+    <script>
+    (function() {
+        'use strict';
+
+        // ========================
+        // INTERNATIONALIZATION (I18N)
+        // ========================
+        const i18n = {
+            en: {
+                btn_undo: "Undo (Ctrl+Z)",
+                btn_redo: "Redo (Ctrl+Y)",
+                device_desktop: "Desktop",
+                device_tablet: "Tablet",
+                device_mobile: "Mobile",
+                tool_cursor: "Select (Cursor)",
+                tool_bucket: "Fill Background",
+                tool_brush: "Color Text",
+                tool_eraser: "Delete (Click)",
+                tool_color: "Pick Color",
+                btn_preview: "Preview",
+                btn_export: "Export Code",
+                btn_save: "Download",
+                tab_elements: "Elements",
+                tab_sections: "Sections",
+                tab_layers: "Layers",
+                sec_basic: "Basic",
+                sec_layout: "Layout",
+                sec_widgets: "Widgets",
+                sec_templates: "Preset Sections",
+                sec_layers: "Element Layers",
+                el_heading: "Heading",
+                el_paragraph: "Paragraph",
+                el_button: "Button",
+                el_image: "Image",
+                el_video: "Video",
+                el_divider: "Line",
+                el_spacer: "Spacer",
+                el_list: "List",
+                el_col2: "2 Columns",
+                el_col3: "3 Columns",
+                el_theme_toggle: "Night/Day Mode",
+                el_lang_picker: "Language Bar",
+                el_nav: "Navbar",
+                el_nav_desc: "Logo + menu links",
+                el_hero: "Hero Section",
+                el_hero_desc: "Heading + subtitle + CTA",
+                el_cards: "Card Grid",
+                el_cards_desc: "Cards layout",
+                el_footer: "Footer",
+                el_footer_desc: "4 columns footer",
+                props_title: "Properties",
+                props_empty: "Click an element on canvas to edit properties",
+                grp_content: "Content",
+                grp_spacing: "Spacing",
+                grp_bg: "Background",
+                grp_actions: "Actions",
+                lbl_size: "Size",
+                lbl_text: "Text",
+                lbl_url: "URL Link",
+                lbl_img_url: "Image URL",
+                lbl_color: "Color",
+                lbl_text_color: "Text Color",
+                lbl_radius: "Border Radius",
+                lbl_alt: "Alt Text",
+                lbl_height: "Height",
+                lbl_brand: "Brand Name",
+                lbl_links: "Links (Text | URL)",
+                lbl_title: "Title",
+                lbl_subtitle: "Subtitle",
+                lbl_button: "Button Text",
+                lbl_desc: "Description",
+                lbl_padding: "Padding",
+                lbl_margin: "Margin Y",
+                lbl_bg: "Background Color",
+                btn_duplicate: "Duplicate",
+                btn_delete: "Delete Element",
+                btn_add_card: "Add Card",
+                drop_empty: "Drag and drop elements here or select from sidebar",
+                col_empty: "Add element",
+                def_heading: "Heading Text",
+                def_paragraph: "This is a paragraph text. Click to edit content. Build your website visually with ease.",
+                def_button: "Click Me",
+                def_items: ["First item", "Second item", "Third item"],
+                def_hero_title: "Build Your Amazing Website",
+                def_hero_subtitle: "Professional design, fast loading speed, and exceptional user experience.",
+                def_hero_btn: "Get Started",
+                def_card_1_title: "Design",
+                def_card_1_desc: "Modern and professional design solutions.",
+                def_card_2_title: "Development",
+                def_card_2_desc: "Fast and reliable web development services.",
+                def_card_3_title: "Support",
+                def_card_3_desc: "24/7 technical support and guidance.",
+                def_footer_brand: "WebMaker",
+                def_footer_desc: "Visual website builder.",
+                export_title: "Export HTML Code",
+                export_close: "Close",
+                export_copy: "Copy Code",
+                preview_title: "Preview Mode",
+                preview_close: "Close",
+                ctx_duplicate: "Duplicate",
+                ctx_moveup: "Move Up",
+                ctx_movedown: "Move Down",
+                ctx_delete: "Delete",
+                toast_bg_painted: "Background colored!",
+                toast_text_painted: "Text colored!",
+                toast_added: "added",
+                toast_duplicated: "Element duplicated",
+                toast_undone: "Undone",
+                toast_redone: "Redone",
+                toast_copied: "HTML code copied to clipboard!",
+                toast_downloaded: "Downloaded: website.html"
+            },
+            sv: {
+                btn_undo: "Ångra (Ctrl+Z)",
+                btn_redo: "Gör om (Ctrl+Y)",
+                device_desktop: "Skrivbord",
+                device_tablet: "Surfplatta",
+                device_mobile: "Mobil",
+                tool_cursor: "Välj (Markör)",
+                tool_bucket: "Fyll bakgrund",
+                tool_brush: "Färglägg text",
+                tool_eraser: "Radera (Klicka)",
+                tool_color: "Välj färg",
+                btn_preview: "Förhandsgranska",
+                btn_export: "Exportera kod",
+                btn_save: "Ladda ner",
+                tab_elements: "Element",
+                tab_sections: "Sektioner",
+                tab_layers: "Lager",
+                sec_basic: "Grundläggande",
+                sec_layout: "Layout",
+                sec_widgets: "Moduler",
+                sec_templates: "Färdiga sektioner",
+                sec_layers: "Elementlager",
+                el_heading: "Rubrik",
+                el_paragraph: "Paragraf",
+                el_button: "Knapp",
+                el_image: "Bild",
+                el_video: "Video",
+                el_divider: "Linje",
+                el_spacer: "Avstånd",
+                el_list: "Lista",
+                el_col2: "2 Kolumner",
+                el_col3: "3 Kolumner",
+                el_theme_toggle: "Natt/Dag-läge",
+                el_lang_picker: "Språkfält",
+                el_nav: "Navigeringsfält",
+                el_nav_desc: "Logotyp + Meny-länkar",
+                el_hero: "Hero-sektion",
+                el_hero_desc: "Rubrik + Underrubrik + CTA",
+                el_cards: "Kort-nätverk",
+                el_cards_desc: "Kort-layout",
+                el_footer: "Sidfot",
+                el_footer_desc: "Sidfot med 4 kolumner",
+                props_title: "Egenskaper",
+                props_empty: "Klicka på ett element på duken för att redigera egenskaper",
+                grp_content: "Innehåll",
+                grp_spacing: "Avstånd",
+                grp_bg: "Bakgrund",
+                grp_actions: "Åtgärder",
+                lbl_size: "Storlek",
+                lbl_text: "Text",
+                lbl_url: "Länk (URL)",
+                lbl_img_url: "Bild-URL",
+                lbl_color: "Färg",
+                lbl_text_color: "Textfärg",
+                lbl_radius: "Hörnradie",
+                lbl_alt: "Alt-text",
+                lbl_height: "Höjd",
+                lbl_brand: "Varumärkesnamn",
+                lbl_links: "Länkar (Text | URL)",
+                lbl_title: "Rubrik",
+                lbl_subtitle: "Underrubrik",
+                lbl_button: "Knapptext",
+                lbl_desc: "Beskrivning",
+                lbl_padding: "Inre marginal",
+                lbl_margin: "Yttre marginal Y",
+                lbl_bg: "Bakgrundsfärg",
+                btn_duplicate: "Duplicera",
+                btn_delete: "Ta bort element",
+                btn_add_card: "Lägg till kort",
+                drop_empty: "Dra och släpp element här eller välj från sidofältet",
+                col_empty: "Lägg till element",
+                def_heading: "Rubriktext",
+                def_paragraph: "Detta är en paragraftext. Klicka för att redigera innehåll. Skapa din webbplats visuellt med lätthet.",
+                def_button: "Klicka här",
+                def_items: ["Första objektet", "Andra objektet", "Tredje objektet"],
+                def_hero_title: "Bygg din fantastiska webbplats",
+                def_hero_subtitle: "Professionell design, snabb laddningshastighet och utmärkt användarupplevelse.",
+                def_hero_btn: "Börja nu",
+                def_card_1_title: "Design",
+                def_card_1_desc: "Moderna och professionella designlösningar.",
+                def_card_2_title: "Utveckling",
+                def_card_2_desc: "Snabba och pålitliga webbutvecklingstjänster.",
+                def_card_3_title: "Support",
+                def_card_3_desc: "24/7 teknisk support och rådgivning.",
+                def_footer_brand: "WebMaker",
+                def_footer_desc: "Visuell webbplatsbyggare.",
+                export_title: "Exportera HTML-kod",
+                export_close: "Stäng",
+                export_copy: "Kopiera kod",
+                preview_title: "Förhandsgranskningsläge",
+                preview_close: "Stäng",
+                ctx_duplicate: "Duplicera",
+                ctx_moveup: "Flytta upp",
+                ctx_movedown: "Flytta ned",
+                ctx_delete: "Radera",
+                toast_bg_painted: "Bakgrund färglagd!",
+                toast_text_painted: "Text färglagd!",
+                toast_added: "tillagd",
+                toast_duplicated: "Element duplicerat",
+                toast_undone: "Ångrat",
+                toast_redone: "Gjort om",
+                toast_copied: "HTML-kod kopierad till urklipp!",
+                toast_downloaded: "Nedladdad: website.html"
+            }
+        };
+
+        let currentLang = localStorage.getItem('webmaker_editor_lang') || 'en';
+
+        // ========================
+        // STATE
+        // ========================
+        let elements = [];
+        let selectedId = null;
+        let undoStack = [];
+        let redoStack = [];
+        let idCounter = 1;
+        let currentZoom = 100;
+        let currentDevice = 'desktop';
+        let draggedType = null;
+        let currentTool = 'cursor';
+        let paintColor = '#8b5cf6';
+
+        // ========================
+        // DOM
+        // ========================
+        const dropZone = document.getElementById('dropZone');
+        const dropIndicator = document.getElementById('dropIndicator');
+        const canvasFrame = document.getElementById('canvasFrame');
+        const propsEmpty = document.getElementById('propsEmpty');
+        const propsContent = document.getElementById('propsContent');
+        const layersList = document.getElementById('layersList');
+        const exportModal = document.getElementById('exportModal');
+        const exportCode = document.getElementById('exportCode');
+        const previewOverlay = document.getElementById('previewOverlay');
+        const previewIframe = document.getElementById('previewIframe');
+        const contextMenu = document.getElementById('contextMenu');
+        const toastEl = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        const zoomLevel = document.getElementById('zoomLevel');
+
+        // ========================
+        // ELEMENT TEMPLATES
+        // ========================
+        function createElementData(type) {
+            const id = 'el-' + (idCounter++);
+            const base = { id, type, styles: {} };
+            const dict = i18n[currentLang] || i18n.en;
+
+            switch(type) {
+                case 'heading':
+                    return { ...base, tag: 'h2', text: dict.def_heading, label: dict.el_heading };
+                case 'paragraph':
+                    return { ...base, text: dict.def_paragraph, label: dict.el_paragraph };
+                case 'button':
+                    return { ...base, text: dict.def_button, label: dict.el_button, btnColor: '#8b5cf6', btnTextColor: '#ffffff', btnRadius: '8', url: '' };
+                case 'image':
+                    return { ...base, src: '', alt: dict.el_image, label: dict.el_image };
+                case 'video':
+                    return { ...base, videoUrl: '', label: dict.el_video };
+                case 'divider':
+                    return { ...base, label: dict.el_divider, dividerColor: '#e0e0e0' };
+                case 'spacer':
+                    return { ...base, height: 40, label: dict.el_spacer };
+                case 'list':
+                    return { ...base, items: [...dict.def_items], label: dict.el_list };
+                case 'columns-2':
+                    return { ...base, label: dict.el_col2, columns: 2, children: [[], []] };
+                case 'columns-3':
+                    return { ...base, label: dict.el_col3, columns: 3, children: [[], [], []] };
+                case 'theme-toggle':
+                    return { ...base, label: dict.el_theme_toggle };
+                case 'lang-picker':
+                    return { ...base, label: dict.el_lang_picker, languages: 'EN | SV | AZ' };
+                case 'section-nav':
+                    return { ...base, label: dict.el_nav, brandName: 'WebMaker', navLinks: currentLang === 'sv' ? ['Hem | /', 'Om oss | /about', 'Tjänster | /services', 'Kontakt | /contact'] : ['Home | /', 'About | /about', 'Services | /services', 'Contact | /contact'], styles: { backgroundColor: '#ffffff' } };
+                case 'section-hero':
+                    return { ...base, label: dict.el_hero, heroTitle: dict.def_hero_title, heroSubtitle: dict.def_hero_subtitle, heroBtnText: dict.def_hero_btn, heroBg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', heroTextColor: '#ffffff', heroBtnBg: '#ffffff', heroBtnColor: '#667eea' };
+                case 'section-cards':
+                    return { ...base, label: dict.el_cards, cards: [
+                        { title: dict.def_card_1_title, desc: dict.def_card_1_desc, imgSrc: '' },
+                        { title: dict.def_card_2_title, desc: dict.def_card_2_desc, imgSrc: '' },
+                        { title: dict.def_card_3_title, desc: dict.def_card_3_desc, imgSrc: '' }
+                    ]};
+                case 'section-footer':
+                    return { ...base, label: dict.el_footer, footerBrand: dict.def_footer_brand, footerDesc: dict.def_footer_desc };
+                default:
+                    return base;
+            }
+        }
+
+        // ========================
+        // RENDER ELEMENT TO CANVAS
+        // ========================
+        function renderElement(el) {
+            const div = document.createElement('div');
+            div.className = 'canvas-element';
+            div.dataset.id = el.id;
+            div.dataset.label = el.label || el.type;
+
+            // Action buttons
+            const actions = document.createElement('div');
+            actions.className = 'element-actions';
+            actions.innerHTML = `
+                <button class="element-action-btn" data-action="duplicate" title="Dublikat"><i class="fas fa-clone"></i></button>
+                <button class="element-action-btn" data-action="moveup" title="Yuxarı"><i class="fas fa-arrow-up"></i></button>
+                <button class="element-action-btn" data-action="movedown" title="Aşağı"><i class="fas fa-arrow-down"></i></button>
+                <button class="element-action-btn delete" data-action="delete" title="Sil"><i class="fas fa-trash"></i></button>
+            `;
+            div.appendChild(actions);
+
+            const resizerSE = document.createElement('div');
+            resizerSE.className = 'resize-handle se';
+            resizerSE.addEventListener('mousedown', (e) => initResize(e, el, div, 'se'));
+            
+            const resizerE = document.createElement('div');
+            resizerE.className = 'resize-handle e';
+            resizerE.addEventListener('mousedown', (e) => initResize(e, el, div, 'e'));
+            
+            const resizerS = document.createElement('div');
+            resizerS.className = 'resize-handle s';
+            resizerS.addEventListener('mousedown', (e) => initResize(e, el, div, 's'));
+
+            div.appendChild(resizerSE);
+            div.appendChild(resizerE);
+            div.appendChild(resizerS);
+
+            // Apply inline styles
+            if (el.styles) {
+                Object.keys(el.styles).forEach(k => {
+                    div.style[k] = el.styles[k];
+                });
+            }
+
+            // Render by type
+            switch(el.type) {
+                case 'heading': {
+                    const h = document.createElement('div');
+                    h.className = 'el-heading';
+                    const tag = el.tag || 'h2';
+                    const hEl = document.createElement(tag);
+                    hEl.textContent = el.text;
+                    hEl.contentEditable = true;
+                    hEl.addEventListener('input', () => { el.text = hEl.textContent; });
+                    hEl.addEventListener('focus', (e) => e.stopPropagation());
+                    h.appendChild(hEl);
+                    div.appendChild(h);
+                    break;
+                }
+                case 'paragraph': {
+                    const p = document.createElement('div');
+                    p.className = 'el-paragraph';
+                    p.contentEditable = true;
+                    p.textContent = el.text;
+                    p.addEventListener('input', () => { el.text = p.textContent; });
+                    p.addEventListener('focus', (e) => e.stopPropagation());
+                    div.appendChild(p);
+                    break;
+                }
+                case 'button': {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'el-button-wrap';
+                    const btn = document.createElement('button');
+                    btn.className = 'el-button';
+                    btn.textContent = el.text;
+                    btn.contentEditable = true;
+                    btn.style.background = el.btnColor || '#8b5cf6';
+                    btn.style.color = el.btnTextColor || '#ffffff';
+                    btn.style.borderRadius = (el.btnRadius || 8) + 'px';
+                    btn.addEventListener('input', () => { el.text = btn.textContent; });
+                    btn.addEventListener('focus', (e) => e.stopPropagation());
+                    wrap.appendChild(btn);
+                    div.appendChild(wrap);
+                    break;
+                }
+                case 'image': {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'el-image-wrap';
+                    if (el.src) {
+                        const img = document.createElement('img');
+                        img.src = el.src;
+                        img.alt = el.alt || '';
+                        img.style.borderRadius = '8px';
+                        img.style.width = '100%';
+                        wrap.appendChild(img);
+                    } else {
+                        const ph = document.createElement('div');
+                        ph.className = 'el-image-placeholder';
+                        ph.innerHTML = '<i class="fas fa-cloud-upload-alt"></i><span>Şəkil URL-i daxil edin</span>';
+                        wrap.appendChild(ph);
+                    }
+                    div.appendChild(wrap);
+                    break;
+                }
+                case 'video': {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'el-video-wrap';
+                    const container = document.createElement('div');
+                    container.className = 'el-video-container';
+                    if (el.videoUrl) {
+                        const ytMatch = el.videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+                        if (ytMatch) {
+                            const iframe = document.createElement('iframe');
+                            iframe.src = `https://www.youtube.com/embed/${ytMatch[1]}`;
+                            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                            iframe.allowFullscreen = true;
+                            container.appendChild(iframe);
+                        } else {
+                            const video = document.createElement('video');
+                            video.src = el.videoUrl;
+                            video.controls = true;
+                            container.appendChild(video);
+                        }
+                    } else {
+                        const ph = document.createElement('div');
+                        ph.className = 'el-video-placeholder';
+                        ph.innerHTML = '<i class="fas fa-play-circle"></i><span>Video URL daxil edin</span>';
+                        container.appendChild(ph);
+                    }
+                    wrap.appendChild(container);
+                    div.appendChild(wrap);
+                    break;
+                }
+                case 'divider': {
+                    const d = document.createElement('div');
+                    d.className = 'el-divider';
+                    const hr = document.createElement('hr');
+                    hr.style.background = el.dividerColor || '#e0e0e0';
+                    d.appendChild(hr);
+                    div.appendChild(d);
+                    break;
+                }
+                case 'spacer': {
+                    const s = document.createElement('div');
+                    s.className = 'el-spacer';
+                    s.style.height = (el.height || 40) + 'px';
+                    div.appendChild(s);
+                    break;
+                }
+                case 'list': {
+                    const l = document.createElement('div');
+                    l.className = 'el-list';
+                    const ul = document.createElement('ul');
+                    (el.items || []).forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = item;
+                        ul.appendChild(li);
+                    });
+                    l.appendChild(ul);
+                    div.appendChild(l);
+                    break;
+                }
+                case 'columns-2':
+                case 'columns-3': {
+                    const cols = document.createElement('div');
+                    cols.className = `el-columns cols-${el.columns}`;
+                    for (let i = 0; i < el.columns; i++) {
+                        const col = document.createElement('div');
+                        col.className = 'el-column' + ((el.children[i] || []).length === 0 ? ' empty' : '');
+                        col.dataset.emptyText = (i18n[currentLang] || i18n.en).col_empty;
+                        col.dataset.colIndex = i;
+                        // Render children in column
+                        (el.children[i] || []).forEach(child => {
+                            col.appendChild(renderElement(child));
+                        });
+                        // Column drop zone
+                        col.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            col.classList.add('drag-over');
+                        });
+                        col.addEventListener('dragleave', () => {
+                            col.classList.remove('drag-over');
+                        });
+                        col.addEventListener('drop', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            col.classList.remove('drag-over');
+                            if (draggedType) {
+                                const newEl = createElementData(draggedType);
+                                if (!el.children[i]) el.children[i] = [];
+                                el.children[i].push(newEl);
+                                saveState();
+                                renderCanvas();
+                                showToast(`${newEl.label} sütuna əlavə edildi`);
+                            }
+                        });
+                        cols.appendChild(col);
+                    }
+                    div.appendChild(cols);
+                    break;
+                }
+                case 'theme-toggle': {
+                    const wrap = document.createElement('div');
+                    wrap.style.padding = '12px 24px';
+                    wrap.innerHTML = `
+                        <button class="el-button" style="background:#2c312d;color:#fff;border-radius:20px;padding:8px 18px;font-size:0.85rem;display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;">
+                            <i class="fas fa-moon"></i> <span>Dark / Light Mode</span>
+                        </button>
+                    `;
+                    div.appendChild(wrap);
+                    break;
+                }
+                case 'lang-picker': {
+                    const wrap = document.createElement('div');
+                    wrap.style.padding = '12px 24px';
+                    const langs = (el.languages || 'EN | SV | AZ').split('|').map(s => s.trim()).filter(Boolean);
+                    wrap.innerHTML = `
+                        <div style="display:inline-flex;background:rgba(0,0,0,0.05);border-radius:6px;padding:3px;gap:4px;border:1px solid #e0e0e0;">
+                            ${langs.map((l, i) => `<span style="padding:4px 10px;font-size:0.8rem;font-weight:600;border-radius:4px;background:${i===0?'#8b5cf6':'transparent'};color:${i===0?'#fff':'#555'};cursor:pointer;">${escHtml(l)}</span>`).join('')}
+                        </div>
+                    `;
+                    div.appendChild(wrap);
+                    break;
+                }
+                case 'section-nav': {
+                    const nav = document.createElement('div');
+                    nav.className = 'el-nav';
+                    nav.innerHTML = `
+                        <div class="el-nav-brand">${el.brandName}</div>
+                        <div class="el-nav-links">
+                            ${(el.navLinks || []).map(l => {
+                                const parts = l.split('|');
+                                const text = parts[0] ? parts[0].trim() : '';
+                                return `<a href="#" onclick="event.preventDefault()">${escHtml(text)}</a>`;
+                            }).join('')}
+                        </div>
+                    `;
+                    div.appendChild(nav);
+                    break;
+                }
+                case 'section-hero': {
+                    const hero = document.createElement('div');
+                    hero.className = 'el-hero';
+                    hero.style.background = el.heroBg || (el.styles && (el.styles.background || el.styles.backgroundColor)) || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    hero.style.color = el.heroTextColor || (el.styles && el.styles.color) || '#ffffff';
+                    hero.innerHTML = `
+                        <h1 style="color:inherit;">${escHtml(el.heroTitle)}</h1>
+                        <p style="color:inherit;">${escHtml(el.heroSubtitle)}</p>
+                        <button class="el-button" style="background:${el.heroBtnBg || 'white'};color:${el.heroBtnColor || '#667eea'};">${escHtml(el.heroBtnText)}</button>
+                    `;
+                    div.appendChild(hero);
+                    break;
+                }
+                case 'section-cards': {
+                    const grid = document.createElement('div');
+                    grid.className = 'el-card-grid';
+                    (el.cards || []).forEach((card, ci) => {
+                        const imgHtml = card.imgSrc
+                            ? `<img src="${escHtml(card.imgSrc)}" alt="${escHtml(card.title)}" style="width:100%;height:100%;object-fit:cover;">`
+                            : `<i class="fas fa-${['palette','code','headset','star','cube','bolt'][ci % 6]}"></i>`;
+                        grid.innerHTML += `
+                            <div class="el-card">
+                                <div class="el-card-img">${imgHtml}</div>
+                                <div class="el-card-body">
+                                    <h3>${escHtml(card.title)}</h3>
+                                    <p>${escHtml(card.desc)}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    div.appendChild(grid);
+                    break;
+                }
+                case 'section-footer': {
+                    const footer = document.createElement('div');
+                    footer.className = 'el-footer';
+                    footer.innerHTML = `
+                        <div class="el-footer-grid">
+                            <div>
+                                <h4>${el.footerBrand}</h4>
+                                <p style="font-size:0.85rem;color:#888;">${el.footerDesc}</p>
+                            </div>
+                            <div>
+                                <h4>Məhsul</h4>
+                                <a href="#">Xüsusiyyətlər</a><a href="#">Qiymətlər</a><a href="#">İnteqrasiyalar</a>
+                            </div>
+                            <div>
+                                <h4>Şirkət</h4>
+                                <a href="#">Haqqımızda</a><a href="#">Karyera</a><a href="#">Blog</a>
+                            </div>
+                            <div>
+                                <h4>Dəstək</h4>
+                                <a href="#">Sənədlər</a><a href="#">Əlaqə</a><a href="#">FAQ</a>
+                            </div>
+                        </div>
+                        <div class="el-footer-bottom">&copy; 2026 ${el.footerBrand}. Bütün hüquqlar qorunur.</div>
+                    `;
+                    div.appendChild(footer);
+                    break;
+                }
+            }
+
+            // Click to select or paint
+            div.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (currentTool === 'cursor') {
+                    selectElement(el.id);
+                } else if (currentTool === 'bucket') {
+                    e.preventDefault();
+                    if (!el.styles) el.styles = {};
+                    el.styles.background = paintColor;
+                    el.styles.backgroundColor = paintColor;
+
+                    if (el.type === 'section-hero') {
+                        if (e.target.closest('button')) {
+                            el.heroBtnBg = paintColor;
+                        } else {
+                            el.heroBg = paintColor;
+                        }
+                    } else if (el.type === 'button') {
+                        el.btnColor = paintColor;
+                    } else if (el.type === 'divider') {
+                        el.dividerColor = paintColor;
+                    }
+
+                    saveState();
+                    renderCanvas();
+                    if (selectedId === el.id) renderProperties();
+                    showToast((i18n[currentLang] || i18n.en).toast_bg_painted);
+                } else if (currentTool === 'brush') {
+                    e.preventDefault();
+                    if (!el.styles) el.styles = {};
+                    el.styles.color = paintColor;
+
+                    if (el.type === 'section-hero') {
+                        if (e.target.closest('button')) {
+                            el.heroBtnColor = paintColor;
+                        } else {
+                            el.heroTextColor = paintColor;
+                        }
+                    } else if (el.type === 'button') {
+                        el.btnTextColor = paintColor;
+                    }
+
+                    saveState();
+                    renderCanvas();
+                    if (selectedId === el.id) renderProperties();
+                    showToast((i18n[currentLang] || i18n.en).toast_text_painted);
+                } else if (currentTool === 'eraser') {
+                    e.preventDefault();
+                    handleAction('delete', el.id);
+                }
+            });
+
+            // Context menu
+            div.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                selectElement(el.id);
+                showContextMenu(e.clientX, e.clientY);
+            });
+
+            // Action buttons
+            div.querySelectorAll('.element-action-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const action = btn.dataset.action;
+                    handleAction(action, el.id);
+                });
+            });
+
+            if (selectedId === el.id) {
+                div.classList.add('selected');
+            }
+
+            return div;
+        }
+
+        // ========================
+        // RENDER CANVAS
+        // ========================
+        function renderCanvas() {
+            dropZone.innerHTML = '';
+            const dict = i18n[currentLang] || i18n.en;
+            dropZone.dataset.emptyText = dict.drop_empty;
+            const indicator = document.createElement('div');
+            indicator.className = 'drop-indicator';
+            indicator.id = 'dropIndicator';
+            dropZone.appendChild(indicator);
+
+            if (elements.length === 0) {
+                dropZone.classList.add('empty');
+            } else {
+                dropZone.classList.remove('empty');
+                elements.forEach(el => {
+                    dropZone.appendChild(renderElement(el));
+                });
+            }
+
+            renderLayers();
+        }
+
+        // ========================
+        // RENDER LAYERS
+        // ========================
+        function renderLayers() {
+            layersList.innerHTML = '';
+            elements.forEach(el => {
+                const iconMap = {
+                    heading: 'fa-heading', paragraph: 'fa-paragraph', button: 'fa-square',
+                    image: 'fa-image', video: 'fa-video', divider: 'fa-minus',
+                    spacer: 'fa-arrows-alt-v', list: 'fa-list-ul', 'columns-2': 'fa-columns',
+                    'columns-3': 'fa-th', 'section-nav': 'fa-bars', 'section-hero': 'fa-star',
+                    'section-cards': 'fa-th-large', 'section-footer': 'fa-shoe-prints'
+                };
+                const item = document.createElement('div');
+                item.className = 'layer-item' + (selectedId === el.id ? ' active' : '');
+                item.innerHTML = `
+                    <i class="fas ${iconMap[el.type] || 'fa-cube'}"></i>
+                    <span class="layer-name">${el.label || el.type}</span>
+                    <span class="layer-visibility"><i class="fas fa-eye"></i></span>
+                `;
+                item.addEventListener('click', () => selectElement(el.id));
+                layersList.appendChild(item);
+            });
+        }
+
+        // ========================
+        // SELECT ELEMENT
+        // ========================
+        function selectElement(id) {
+            selectedId = id;
+            renderCanvas();
+            renderProperties();
+        }
+
+        function deselectAll() {
+            selectedId = null;
+            renderCanvas();
+            propsContent.style.display = 'none';
+            propsEmpty.style.display = 'flex';
+        }
+
+        // ========================
+        // PROPERTIES PANEL
+        // ========================
+        function renderProperties() {
+            const el = elements.find(e => e.id === selectedId);
+            if (!el) {
+                propsContent.style.display = 'none';
+                propsEmpty.style.display = 'flex';
+                return;
+            }
+
+            propsEmpty.style.display = 'none';
+            propsContent.style.display = 'block';
+
+            const dict = i18n[currentLang] || i18n.en;
+            let html = '';
+
+            // Content group
+            html += `<div class="prop-group"><div class="prop-group-title">${dict.grp_content}</div>`;
+
+            switch(el.type) {
+                case 'heading':
+                    html += `
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_size}</span>
+                            <select class="prop-select" data-prop="tag">
+                                <option value="h1" ${el.tag==='h1'?'selected':''}>H1 — Large</option>
+                                <option value="h2" ${el.tag==='h2'?'selected':''}>H2 — Medium</option>
+                                <option value="h3" ${el.tag==='h3'?'selected':''}>H3 — Small</option>
+                            </select>
+                        </div>
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_text}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.text)}" data-prop="text">
+                        </div>
+                    `;
+                    break;
+                case 'paragraph':
+                    html += `
+                        <textarea class="prop-textarea" data-prop="text">${escHtml(el.text)}</textarea>
+                    `;
+                    break;
+                case 'button':
+                    html += `
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_text}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.text)}" data-prop="text">
+                        </div>
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_url}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.url || '')}" data-prop="url" placeholder="https://...">
+                        </div>
+                        <div class="prop-color-row">
+                            <span class="prop-label">${dict.lbl_color}</span>
+                            <input class="prop-color-input" type="color" value="${el.btnColor || '#8b5cf6'}" data-prop="btnColor">
+                            <input class="prop-input-sm" type="text" value="${el.btnColor || '#8b5cf6'}" data-prop="btnColor">
+                        </div>
+                        <div class="prop-color-row">
+                            <span class="prop-label">${dict.lbl_text_color}</span>
+                            <input class="prop-color-input" type="color" value="${el.btnTextColor || '#ffffff'}" data-prop="btnTextColor">
+                        </div>
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_radius}</span>
+                            <input class="prop-input-sm" type="number" value="${el.btnRadius || 8}" data-prop="btnRadius" min="0" max="50"> px
+                        </div>
+                    `;
+                    break;
+                case 'image':
+                    html += `
+                        <div class="prop-row">
+                            <span class="prop-label">URL</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.src || '')}" data-prop="src" placeholder="https://...">
+                        </div>
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_alt}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.alt || '')}" data-prop="alt">
+                        </div>
+                    `;
+                    break;
+                case 'video':
+                    html += `
+                        <div class="prop-row" style="flex-direction:column;align-items:stretch;gap:4px;">
+                            <span class="prop-label">Video URL (YouTube / mp4)</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.videoUrl || '')}" data-prop="videoUrl" placeholder="https://youtube.com/watch?v=...">
+                        </div>
+                    `;
+                    break;
+                case 'spacer':
+                    html += `
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_height}</span>
+                            <input class="prop-input-sm" type="number" value="${el.height || 40}" data-prop="height" min="8" max="200"> px
+                        </div>
+                    `;
+                    break;
+                case 'divider':
+                    html += `
+                        <div class="prop-color-row">
+                            <span class="prop-label">${dict.lbl_color}</span>
+                            <input class="prop-color-input" type="color" value="${el.dividerColor || '#e0e0e0'}" data-prop="dividerColor">
+                        </div>
+                    `;
+                    break;
+                case 'list':
+                    html += `
+                        <textarea class="prop-textarea" data-prop="items" placeholder="One item per line">${(el.items || []).join('\n')}</textarea>
+                    `;
+                    break;
+                case 'section-nav':
+                    html += `
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_brand}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.brandName)}" data-prop="brandName">
+                        </div>
+                        <div class="prop-row" style="flex-direction:column;align-items:stretch;gap:4px;">
+                            <span class="prop-label">${dict.lbl_links}</span>
+                            <textarea class="prop-textarea" data-prop="navLinks">${(el.navLinks||[]).join('\n')}</textarea>
+                        </div>
+                    `;
+                    break;
+                case 'section-hero':
+                    html += `
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_title}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.heroTitle)}" data-prop="heroTitle">
+                        </div>
+                        <textarea class="prop-textarea" data-prop="heroSubtitle" placeholder="Subtitle...">${escHtml(el.heroSubtitle)}</textarea>
+                        <div class="prop-row" style="margin-top:8px;">
+                            <span class="prop-label">${dict.lbl_button}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.heroBtnText)}" data-prop="heroBtnText">
+                        </div>
+                    `;
+                    break;
+                case 'lang-picker':
+                    html += `
+                        <div class="prop-row" style="flex-direction:column;align-items:stretch;gap:4px;">
+                            <span class="prop-label">${dict.lbl_links}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.languages || 'EN | SV | AZ')}" data-prop="languages" placeholder="EN | SV | AZ">
+                        </div>
+                    `;
+                    break;
+                case 'section-cards':
+                    html += `
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                            <span class="prop-label" style="font-weight:600;">Cards (${(el.cards||[]).length})</span>
+                            <button class="prop-btn" style="width:auto;padding:4px 10px;font-size:0.75rem;" onclick="window._addCard('${el.id}')"><i class="fas fa-plus"></i> ${dict.btn_add_card}</button>
+                        </div>
+                    `;
+                    (el.cards || []).forEach((card, idx) => {
+                        html += `
+                            <div style="background:rgba(0,0,0,0.02);border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:10px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                    <strong style="font-size:0.8rem;color:#64748b;">Card #${idx+1}</strong>
+                                    <button class="prop-btn danger" style="width:auto;padding:2px 6px;font-size:0.7rem;" onclick="window._removeCard('${el.id}', ${idx})"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <div class="prop-row" style="margin-bottom:4px;">
+                                    <span class="prop-label">${dict.lbl_img_url}</span>
+                                    <input class="prop-input" type="text" value="${escHtml(card.imgSrc || '')}" data-card-idx="${idx}" data-card-field="imgSrc" placeholder="https://...">
+                                </div>
+                                <div class="prop-row" style="margin-bottom:4px;">
+                                    <span class="prop-label">${dict.lbl_title}</span>
+                                    <input class="prop-input" type="text" value="${escHtml(card.title || '')}" data-card-idx="${idx}" data-card-field="title">
+                                </div>
+                                <div class="prop-row">
+                                    <span class="prop-label">${dict.lbl_desc}</span>
+                                    <input class="prop-input" type="text" value="${escHtml(card.desc || '')}" data-card-idx="${idx}" data-card-field="desc">
+                                </div>
+                            </div>
+                        `;
+                    });
+                    break;
+                case 'section-footer':
+                    html += `
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_brand}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.footerBrand)}" data-prop="footerBrand">
+                        </div>
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_desc}</span>
+                            <input class="prop-input" type="text" value="${escHtml(el.footerDesc)}" data-prop="footerDesc">
+                        </div>
+                    `;
+                    break;
+            }
+            html += `</div>`;
+
+            // Spacing group
+            html += `
+                <div class="prop-group">
+                    <div class="prop-group-title">${dict.grp_spacing}</div>
+                    <div class="prop-row">
+                        <span class="prop-label">${dict.lbl_padding}</span>
+                        <input class="prop-input-sm" type="number" value="${parseInt(el.styles.padding) || ''}" data-style="padding" placeholder="0" min="0"> px
+                    </div>
+                    <div class="prop-row">
+                        <span class="prop-label">${dict.lbl_margin}</span>
+                        <input class="prop-input-sm" type="number" value="${parseInt(el.styles.marginTop) || ''}" data-style="marginTop" placeholder="0" min="0"> px
+                    </div>
+                </div>
+            `;
+
+            // Background
+            html += `
+                <div class="prop-group">
+                    <div class="prop-group-title">${dict.grp_bg}</div>
+                    <div class="prop-color-row">
+                        <span class="prop-label">${dict.lbl_bg}</span>
+                        <input class="prop-color-input" type="color" value="${(el.styles.background && el.styles.background.startsWith('#')) ? el.styles.background : (el.styles.backgroundColor || '#ffffff')}" data-style="backgroundColor">
+                        <input class="prop-input-sm" style="flex:2" type="text" value="${escHtml(el.styles.background || el.styles.backgroundColor || '')}" data-style="background" placeholder="#fff / url(...)">
+                    </div>
+                </div>
+            `;
+
+            // Actions
+            html += `
+                <div class="prop-group">
+                    <div class="prop-group-title">${dict.grp_actions}</div>
+                    <button class="prop-btn" onclick="window._duplicateSelected()"><i class="fas fa-clone"></i> ${dict.btn_duplicate}</button>
+                    <button class="prop-btn danger" onclick="window._deleteSelected()"><i class="fas fa-trash"></i> ${dict.btn_delete}</button>
+                </div>
+            `;
+
+            propsContent.innerHTML = html;
+
+            // Bind property changes
+            propsContent.querySelectorAll('[data-prop]').forEach(input => {
+                const event = input.tagName === 'SELECT' ? 'change' : 'input';
+                input.addEventListener(event, () => {
+                    const prop = input.dataset.prop;
+                    let val = input.value;
+
+                    if (prop === 'items') {
+                        el.items = val.split('\n').filter(s => s.trim());
+                    } else if (prop === 'navLinks') {
+                        el.navLinks = val.split('\n').filter(s => s.trim());
+                    } else if (prop === 'height' || prop === 'btnRadius') {
+                        el[prop] = parseInt(val) || 0;
+                    } else {
+                        el[prop] = val;
+                    }
+
+                    // Sync paired color/text inputs
+                    if (input.type === 'color') {
+                        const sibling = input.nextElementSibling;
+                        if (sibling && sibling.dataset.prop === prop) sibling.value = val;
+                    }
+
+                    saveState();
+                    renderCanvas();
+                });
+            });
+
+            // Bind style changes
+            propsContent.querySelectorAll('[data-style]').forEach(input => {
+                input.addEventListener('input', () => {
+                    const style = input.dataset.style;
+                    const val = input.value;
+
+                    if (input.type === 'color') {
+                        el.styles[style] = val;
+                    } else if (input.type === 'number') {
+                        el.styles[style] = val ? val + 'px' : '';
+                    } else {
+                        el.styles[style] = val;
+                    }
+
+                    saveState();
+                    renderCanvas();
+                });
+            });
+
+            // Bind card input changes
+            propsContent.querySelectorAll('[data-card-idx]').forEach(input => {
+                input.addEventListener('input', () => {
+                    const idx = parseInt(input.dataset.cardIdx);
+                    const field = input.dataset.cardField;
+                    if (el.cards && el.cards[idx]) {
+                        el.cards[idx][field] = input.value;
+                        saveState();
+                        renderCanvas();
+                    }
+                });
+            });
+        }
+
+        window._addCard = (elId) => {
+            const el = elements.find(e => e.id === elId);
+            if (el) {
+                if (!el.cards) el.cards = [];
+                const dict = i18n[currentLang] || i18n.en;
+                el.cards.push({ title: 'New Card', desc: 'Card description...', imgSrc: '' });
+                saveState();
+                renderCanvas();
+                renderProperties();
+            }
+        };
+
+        window._removeCard = (elId, idx) => {
+            const el = elements.find(e => e.id === elId);
+            if (el && el.cards && el.cards.length > 1) {
+                el.cards.splice(idx, 1);
+                saveState();
+                renderCanvas();
+                renderProperties();
+            }
+        };
+
+        function escHtml(str) {
+            return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function initResize(e, el, div, dir) {
+            e.stopPropagation();
+            e.preventDefault();
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startWidth = div.offsetWidth;
+            const startHeight = div.offsetHeight;
+
+            const computedFS = parseFloat(window.getComputedStyle(div).fontSize) || 16;
+            const startFontSize = el.styles && el.styles.fontSize ? parseFloat(el.styles.fontSize) : computedFS;
+
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(f => f.style.pointerEvents = 'none');
+
+            function onMouseMove(moveEvent) {
+                let newWidth = startWidth;
+                let newHeight = startHeight;
+
+                if (dir.includes('e')) {
+                    newWidth = Math.max(30, startWidth + (moveEvent.clientX - startX));
+                    const w = newWidth + 'px';
+                    div.style.width = w;
+                    if (!el.styles) el.styles = {};
+                    el.styles.width = w;
+                }
+                if (dir.includes('s')) {
+                    newHeight = Math.max(30, startHeight + (moveEvent.clientY - startY));
+                    const h = newHeight + 'px';
+                    div.style.height = h;
+                    if (!el.styles) el.styles = {};
+                    el.styles.height = h;
+                }
+
+                let ratioW = startWidth > 0 ? (newWidth / startWidth) : 1;
+                let ratioH = startHeight > 0 ? (newHeight / startHeight) : 1;
+                let scaleRatio = 1;
+                if (dir === 'se') {
+                    scaleRatio = (ratioW + ratioH) / 2;
+                } else if (dir === 'e') {
+                    scaleRatio = ratioW;
+                } else if (dir === 's') {
+                    scaleRatio = ratioH;
+                }
+
+                if (scaleRatio > 0 && !isNaN(scaleRatio)) {
+                    const newFontSize = Math.max(8, Math.round(startFontSize * scaleRatio * 10) / 10) + 'px';
+                    div.style.fontSize = newFontSize;
+                    if (!el.styles) el.styles = {};
+                    el.styles.fontSize = newFontSize;
+                }
+            }
+
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                iframes.forEach(f => f.style.pointerEvents = '');
+                saveState();
+                renderProperties();
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        // ========================
+        // ACTIONS
+        // ========================
+        function handleAction(action, id) {
+            const idx = elements.findIndex(e => e.id === id);
+            if (idx === -1) return;
+
+            switch(action) {
+                case 'duplicate': {
+                    const clone = JSON.parse(JSON.stringify(elements[idx]));
+                    clone.id = 'el-' + (idCounter++);
+                    elements.splice(idx + 1, 0, clone);
+                    saveState();
+                    selectElement(clone.id);
+                    showToast('Element dublikat edildi');
+                    break;
+                }
+                case 'moveup': {
+                    if (idx > 0) {
+                        [elements[idx - 1], elements[idx]] = [elements[idx], elements[idx - 1]];
+                        saveState();
+                        renderCanvas();
+                        renderProperties();
+                    }
+                    break;
+                }
+                case 'movedown': {
+                    if (idx < elements.length - 1) {
+                        [elements[idx], elements[idx + 1]] = [elements[idx + 1], elements[idx]];
+                        saveState();
+                        renderCanvas();
+                        renderProperties();
+                    }
+                    break;
+                }
+                case 'delete': {
+                    elements.splice(idx, 1);
+                    selectedId = null;
+                    saveState();
+                    renderCanvas();
+                    propsContent.style.display = 'none';
+                    propsEmpty.style.display = 'flex';
+                    showToast('Element silindi');
+                    break;
+                }
+            }
+        }
+
+        window._duplicateSelected = () => { if (selectedId) handleAction('duplicate', selectedId); };
+        window._deleteSelected = () => { if (selectedId) handleAction('delete', selectedId); };
+
+        // ========================
+        // DRAG & DROP
+        // ========================
+        document.querySelectorAll('.component-item, .section-item').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                draggedType = item.dataset.type;
+                e.dataTransfer.effectAllowed = 'copy';
+                item.style.opacity = '0.5';
+            });
+            item.addEventListener('dragend', () => {
+                draggedType = null;
+                item.style.opacity = '1';
+            });
+            // Click to add
+            item.addEventListener('dblclick', () => {
+                const type = item.dataset.type;
+                const newEl = createElementData(type);
+                elements.push(newEl);
+                saveState();
+                selectElement(newEl.id);
+                showToast(`${newEl.label} əlavə edildi`);
+            });
+        });
+
+        let dropTargetIndex = -1;
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            dropZone.classList.add('drag-over');
+
+            // Calculate drop position
+            const children = Array.from(dropZone.querySelectorAll(':scope > .canvas-element'));
+            const indicator = document.getElementById('dropIndicator');
+
+            if (children.length === 0) {
+                dropTargetIndex = 0;
+                indicator.style.display = 'none';
+                return;
+            }
+
+            let insertIdx = children.length;
+            for (let i = 0; i < children.length; i++) {
+                const rect = children[i].getBoundingClientRect();
+                if (e.clientY < rect.top + rect.height / 2) {
+                    insertIdx = i;
+                    break;
+                }
+            }
+
+            dropTargetIndex = insertIdx;
+
+            // Position indicator
+            if (insertIdx < children.length) {
+                const rect = children[insertIdx].getBoundingClientRect();
+                const zoneRect = dropZone.getBoundingClientRect();
+                indicator.style.top = (rect.top - zoneRect.top - 1) + 'px';
+            } else {
+                const lastRect = children[children.length - 1].getBoundingClientRect();
+                const zoneRect = dropZone.getBoundingClientRect();
+                indicator.style.top = (lastRect.bottom - zoneRect.top + 1) + 'px';
+            }
+            indicator.style.display = 'block';
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            if (!dropZone.contains(e.relatedTarget)) {
+                dropZone.classList.remove('drag-over');
+                document.getElementById('dropIndicator').style.display = 'none';
+            }
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            document.getElementById('dropIndicator').style.display = 'none';
+
+            if (draggedType) {
+                const newEl = createElementData(draggedType);
+                if (dropTargetIndex >= 0 && dropTargetIndex < elements.length) {
+                    elements.splice(dropTargetIndex, 0, newEl);
+                } else {
+                    elements.push(newEl);
+                }
+                draggedType = null;
+                saveState();
+                selectElement(newEl.id);
+                showToast(`${newEl.label} əlavə edildi`);
+            }
+        });
+
+        // Click on canvas to deselect
+        document.getElementById('canvasArea').addEventListener('click', (e) => {
+            if (e.target.closest('.canvas-element')) return;
+            deselectAll();
+        });
+
+        // ========================
+        // SIDEBAR TABS
+        // ========================
+        document.querySelectorAll('.sidebar-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                document.getElementById('tabElements').style.display = 'none';
+                document.getElementById('tabSections').style.display = 'none';
+                document.getElementById('tabLayers').style.display = 'none';
+
+                const tabName = tab.dataset.tab;
+                if (tabName === 'elements') document.getElementById('tabElements').style.display = 'block';
+                if (tabName === 'sections') document.getElementById('tabSections').style.display = 'block';
+                if (tabName === 'layers') document.getElementById('tabLayers').style.display = 'block';
+            });
+        });
+
+        // ========================
+        // DEVICE SWITCHER
+        // ========================
+        document.querySelectorAll('#deviceGroup .toolbar-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#deviceGroup .toolbar-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentDevice = btn.dataset.device;
+                canvasFrame.className = 'canvas-frame ' + currentDevice;
+            });
+        });
+
+        // ========================
+        // ZOOM
+        // ========================
+        document.getElementById('btnZoomIn').addEventListener('click', () => {
+            currentZoom = Math.min(150, currentZoom + 10);
+            applyZoom();
+        });
+
+        document.getElementById('btnZoomOut').addEventListener('click', () => {
+            currentZoom = Math.max(50, currentZoom - 10);
+            applyZoom();
+        });
+
+        function applyZoom() {
+            zoomLevel.textContent = currentZoom + '%';
+            canvasFrame.style.transform = `scale(${currentZoom / 100})`;
+            canvasFrame.style.transformOrigin = 'top center';
+        }
+
+        // ========================
+        // UNDO / REDO
+        // ========================
+        function saveState() {
+            undoStack.push(JSON.stringify(elements));
+            if (undoStack.length > 50) undoStack.shift();
+            redoStack = [];
+        }
+
+        document.getElementById('btnUndo').addEventListener('click', undo);
+        document.getElementById('btnRedo').addEventListener('click', redo);
+
+        function undo() {
+            if (undoStack.length === 0) return;
+            redoStack.push(JSON.stringify(elements));
+            elements = JSON.parse(undoStack.pop());
+            selectedId = null;
+            renderCanvas();
+            propsContent.style.display = 'none';
+            propsEmpty.style.display = 'flex';
+            showToast((i18n[currentLang] || i18n.en).toast_undone);
+        }
+
+        function redo() {
+            if (redoStack.length === 0) return;
+            undoStack.push(JSON.stringify(elements));
+            elements = JSON.parse(redoStack.pop());
+            selectedId = null;
+            renderCanvas();
+            propsContent.style.display = 'none';
+            propsEmpty.style.display = 'flex';
+            showToast((i18n[currentLang] || i18n.en).toast_redone);
+        }
+
+        // ========================
+        // EXPORT HTML
+        // ========================
+        document.getElementById('btnExport').addEventListener('click', () => {
+            const code = generateHTML();
+            exportCode.textContent = code;
+            exportModal.classList.add('active');
+        });
+
+        document.getElementById('exportModalClose').addEventListener('click', () => exportModal.classList.remove('active'));
+        document.getElementById('exportModalCancel').addEventListener('click', () => exportModal.classList.remove('active'));
+        exportModal.addEventListener('click', (e) => { if (e.target === exportModal) exportModal.classList.remove('active'); });
+
+        document.getElementById('exportCopyBtn').addEventListener('click', () => {
+            navigator.clipboard.writeText(generateHTML()).then(() => {
+                showToast((i18n[currentLang] || i18n.en).toast_copied);
+            });
+        });
+
+        function generateHTML() {
+            let body = '';
+            elements.forEach(el => { body += generateElementHTML(el); });
+
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMaker Website</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; color: #333; transition: background 0.3s, color 0.3s; }
+        img { max-width: 100%; display: block; }
+        a { text-decoration: none; color: inherit; }
+        
+        /* Dark Mode Support */
+        body.dark-mode { background-color: #121218 !important; color: #f1f5f9 !important; }
+        body.dark-mode div, body.dark-mode section, body.dark-mode nav, body.dark-mode footer { border-color: rgba(255,255,255,0.1) !important; }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode p, body.dark-mode a { color: #f1f5f9 !important; }
+        body.dark-mode .el-card { background-color: #1e1e2d !important; color: #f1f5f9 !important; border-color: #2d2d3f !important; }
+    </style>
+</head>
+<body>
+${body}
+</body>
+</html>`;
+        }
+
+        function generateElementHTML(el) {
+            const sty = el.styles || {};
+            const styStr = Object.keys(sty).filter(k => sty[k]).map(k => `${camelToDash(k)}:${sty[k]}`).join(';');
+            const styAttr = styStr ? ` style="${styStr}"` : '';
+
+            switch(el.type) {
+                case 'heading': {
+                    const tag = el.tag || 'h2';
+                    const sizes = { h1: '2.2em', h2: '1.7em', h3: '1.3em' };
+                    return `  <div${styAttr}><${tag} style="padding:0.8em 1.2em;font-size:${sizes[tag]};color:#111;margin:0;">${escHtml(el.text)}</${tag}></div>\n`;
+                }
+                case 'paragraph':
+                    return `  <p style="padding:0.6em 1.2em;font-size:1em;line-height:1.6;color:#555;${styStr}">${escHtml(el.text)}</p>\n`;
+                case 'button': {
+                    const btnTag = el.url ? `a href="${escHtml(el.url)}"` : 'button';
+                    const closeTag = el.url ? 'a' : 'button';
+                    return `  <div style="padding:0.6em 1.2em;${styStr}"><${btnTag} style="display:inline-block;padding:0.65em 1.5em;background:${el.btnColor};color:${el.btnTextColor};border:none;border-radius:${el.btnRadius}px;font-size:0.95em;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;text-decoration:none;">${escHtml(el.text)}</${closeTag}></div>\n`;
+                }
+                case 'image':
+                    return el.src
+                        ? `  <div style="padding:0.6em 1.2em;${styStr}"><img src="${escHtml(el.src)}" alt="${escHtml(el.alt)}" style="max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;border-radius:8px;"></div>\n`
+                        : '';
+                case 'video': {
+                    if (!el.videoUrl) return '';
+                    const ytMatch = el.videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+                    if (ytMatch) {
+                        return `  <div style="padding:0.6em 1.2em;${styStr}"><div style="position:relative;width:100%;padding-bottom:56.25%;"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div></div>\n`;
+                    }
+                    return `  <div style="padding:0.6em 1.2em;${styStr}"><video src="${escHtml(el.videoUrl)}" controls style="width:100%;border-radius:8px;"></video></div>\n`;
+                }
+                case 'divider':
+                    return `  <div style="padding:0.5em 1.2em;${styStr}"><hr style="border:none;height:1px;background:${el.dividerColor || '#e0e0e0'};"></div>\n`;
+                case 'spacer':
+                    return `  <div style="height:${el.height || 40}px;${styStr}"></div>\n`;
+                case 'list':
+                    return `  <div style="padding:0.75em 1.5em;${styStr}"><ul style="padding-left:1.5em;">${(el.items||[]).map(i=>`<li style="padding:0.25em 0;color:#555;font-size:0.95em;">${escHtml(i)}</li>`).join('')}</ul></div>\n`;
+                case 'columns-2':
+                case 'columns-3': {
+                    const colHtml = (el.children || []).map(col => {
+                        const inner = col.map(c => generateElementHTML(c)).join('');
+                        return `<div style="flex:1;min-width:0;">${inner || '&nbsp;'}</div>`;
+                    }).join('');
+                    return `  <div style="display:flex;gap:1em;padding:0.6em 1.2em;${styStr}">${colHtml}</div>\n`;
+                }
+                case 'section-nav':
+                    return `  <nav style="display:flex;align-items:center;justify-content:space-between;padding:1em 1.8em;border-bottom:1px solid #eee;${styStr}"><div style="font-size:1.3em;font-weight:800;color:#111;">${escHtml(el.brandName)}</div><div style="display:flex;gap:1.5em;">${(el.navLinks||[]).map(l=>{
+                        const parts = l.split('|');
+                        const text = parts[0] ? parts[0].trim() : '';
+                        const url = parts[1] ? parts[1].trim() : '#';
+                        return `<a href="${escHtml(url)}" style="font-size:0.9em;color:#555;font-weight:500;text-decoration:none;">${escHtml(text)}</a>`;
+                    }).join('')}</div></nav>\n`;
+                case 'section-hero': {
+                    const heroBg = el.heroBg || (el.styles && (el.styles.background || el.styles.backgroundColor)) || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    const heroTextColor = el.heroTextColor || (el.styles && el.styles.color) || '#ffffff';
+                    const heroBtnBg = el.heroBtnBg || 'white';
+                    const heroBtnColor = el.heroBtnColor || '#667eea';
+                    return `  <section style="padding:2.5em 1.8em;text-align:center;background:${heroBg};color:${heroTextColor};${styStr}"><h1 style="font-size:2.4em;font-weight:800;margin-bottom:0.5em;color:inherit;line-height:1.2;">${escHtml(el.heroTitle)}</h1><p style="font-size:1.05em;opacity:0.9;margin-bottom:1em;max-width:600px;margin-left:auto;margin-right:auto;color:inherit;line-height:1.5;">${escHtml(el.heroSubtitle)}</p><button style="padding:0.75em 2em;background:${heroBtnBg};color:${heroBtnColor};border:none;border-radius:8px;font-size:0.95em;font-weight:600;cursor:pointer;">${escHtml(el.heroBtnText)}</button></section>\n`;
+                }
+                case 'theme-toggle':
+                    return `  <div style="padding:0.6em 1.2em;${styStr}"><button onclick="document.body.classList.toggle('dark-mode')" style="background:#2c312d;color:#fff;border:none;border-radius:20px;padding:0.5em 1.2em;font-size:0.85em;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:0.5em;"><i class="fas fa-moon"></i> <span>Dark / Light</span></button></div>\n`;
+                case 'lang-picker': {
+                    const langs = (el.languages || 'EN | SV | AZ').split('|').map(s => s.trim()).filter(Boolean);
+                    return `  <div style="padding:0.6em 1.2em;${styStr}"><div style="display:inline-flex;background:rgba(0,0,0,0.05);border-radius:6px;padding:3px;gap:4px;border:1px solid #ddd;">${langs.map((l, i) => `<span style="padding:0.3em 0.7em;font-size:0.8em;font-weight:600;border-radius:4px;background:${i===0?'#5e6b55':'transparent'};color:${i===0?'#fff':'#333'};cursor:pointer;">${escHtml(l)}</span>`).join('')}</div></div>\n`;
+                }
+                case 'section-cards':
+                    return `  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2em;padding:1.2em;${styStr}">${(el.cards||[]).map((c, ci)=>{
+                        const imgHtml = c.imgSrc
+                            ? `<img src="${escHtml(c.imgSrc)}" alt="${escHtml(c.title)}" style="width:100%;height:100%;object-fit:cover;">`
+                            : `<div style="height:100%;background:linear-gradient(135deg,#f0f0f5,#e0e0ea);display:flex;align-items:center;justify-content:center;color:#999;font-size:1.5em;"><i class="fas fa-${['palette','code','headset','star','cube','bolt'][ci % 6]}"></i></div>`;
+                        return `<div style="background:white;border-radius:12px;overflow:hidden;border:1px solid #eee;box-shadow:0 2px 8px rgba(0,0,0,0.06);"><div style="height:8em;min-height:50px;">${imgHtml}</div><div style="padding:0.8em;"><h3 style="font-size:1.05em;font-weight:700;margin-bottom:0.3em;color:#222;">${escHtml(c.title)}</h3><p style="font-size:0.85em;color:#777;line-height:1.4;">${escHtml(c.desc)}</p></div></div>`;
+                    }).join('')}</div>\n`;
+                case 'section-footer':
+                    return `  <footer style="background:#111;color:#aaa;padding:2em 1.8em 1.2em;${styStr}"><div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:1.8em;margin-bottom:1.8em;"><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">${escHtml(el.footerBrand)}</h4><p style="font-size:0.85em;color:#888;">${escHtml(el.footerDesc)}</p></div><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">Məhsul</h4><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Xüsusiyyətlər</a><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Qiymətlər</a></div><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">Şirkət</h4><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Haqqımızda</a><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Blog</a></div><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">Dəstək</h4><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Sənədlər</a><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Əlaqə</a></div></div><div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:1em;font-size:0.78em;text-align:center;">&copy; 2026 ${escHtml(el.footerBrand)}. Bütün hüquqlar qorunur.</div></footer>\n`;
+                default:
+                    return '';
+            }
+        }
+
+        function camelToDash(str) {
+            return str.replace(/([A-Z])/g, '-$1').toLowerCase();
+        }
+
+        // ========================
+        // PREVIEW
+        // ========================
+        document.getElementById('btnPreview').addEventListener('click', () => {
+            const html = generateHTML();
+            previewOverlay.classList.add('active');
+            previewIframe.srcdoc = html;
+        });
+
+        document.getElementById('previewClose').addEventListener('click', () => {
+            previewOverlay.classList.remove('active');
+            previewIframe.srcdoc = '';
+        });
+
+        // ========================
+        // SAVE (download)
+        // ========================
+        document.getElementById('btnSave').addEventListener('click', () => {
+            const html = generateHTML();
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'website.html';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Fayl endirildi: website.html');
+        });
+
+        // ========================
+        // CONTEXT MENU
+        // ========================
+        function showContextMenu(x, y) {
+            contextMenu.style.left = x + 'px';
+            contextMenu.style.top = y + 'px';
+            contextMenu.classList.add('active');
+        }
+
+        document.addEventListener('click', () => {
+            contextMenu.classList.remove('active');
+        });
+
+        document.querySelectorAll('.context-menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const action = item.dataset.action;
+                if (selectedId) handleAction(action, selectedId);
+                contextMenu.classList.remove('active');
+            });
+        });
+
+        // ========================
+        // KEYBOARD SHORTCUTS
+        // ========================
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger shortcuts when editing text
+            if (e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+
+            if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
+            if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (selectedId) { e.preventDefault(); handleAction('delete', selectedId); }
+            }
+            if (e.ctrlKey && e.key === 'd') {
+                if (selectedId) { e.preventDefault(); handleAction('duplicate', selectedId); }
+            }
+            if (e.key === 'Escape') {
+                deselectAll();
+                exportModal.classList.remove('active');
+                previewOverlay.classList.remove('active');
+                contextMenu.classList.remove('active');
+            }
+        });
+
+        // ========================
+        // TOAST
+        // ========================
+        let toastTimeout;
+        function showToast(msg) {
+            toastMsg.textContent = msg;
+            toastEl.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toastEl.classList.remove('show'), 2500);
+        }
+
+        // Paint tools
+        const paintBtns = document.querySelectorAll('#paintTools .toolbar-btn');
+        paintBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                paintBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTool = btn.dataset.tool;
+                
+                if (currentTool === 'cursor') dropZone.style.cursor = 'default';
+                if (currentTool === 'bucket') dropZone.style.cursor = 'crosshair';
+                if (currentTool === 'brush') dropZone.style.cursor = 'crosshair';
+                if (currentTool === 'eraser') dropZone.style.cursor = 'no-drop';
+            });
+        });
+        document.getElementById('paintColor').addEventListener('input', (e) => {
+            paintColor = e.target.value;
+        });
+
+        // Language Switcher listeners & function
+        function setEditorLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('webmaker_editor_lang', lang);
+            const dict = i18n[lang] || i18n.en;
+
+            const btnEn = document.getElementById('btnLangEn');
+            const btnSv = document.getElementById('btnLangSv');
+            if (btnEn && btnSv) {
+                if (lang === 'en') {
+                    btnEn.style.background = '#8b5cf6';
+                    btnEn.style.color = 'white';
+                    btnSv.style.background = 'transparent';
+                    btnSv.style.color = '#94a3b8';
+                } else {
+                    btnSv.style.background = '#8b5cf6';
+                    btnSv.style.color = 'white';
+                    btnEn.style.background = 'transparent';
+                    btnEn.style.color = '#94a3b8';
+                }
+            }
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    const icon = el.querySelector('i');
+                    if (icon) {
+                        el.innerHTML = '';
+                        el.appendChild(icon);
+                        el.appendChild(document.createTextNode(' ' + dict[key]));
+                    } else {
+                        el.textContent = dict[key];
+                    }
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-tooltip]').forEach(el => {
+                const key = el.getAttribute('data-i18n-tooltip');
+                if (dict[key]) {
+                    el.dataset.tooltip = dict[key];
+                }
+            });
+
+            renderCanvas();
+            renderProperties();
+        }
+
+        const btnLangEn = document.getElementById('btnLangEn');
+        const btnLangSv = document.getElementById('btnLangSv');
+        if (btnLangEn) btnLangEn.addEventListener('click', () => setEditorLanguage('en'));
+        if (btnLangSv) btnLangSv.addEventListener('click', () => setEditorLanguage('sv'));
+
+        // ========================
+        // INIT
+        // ========================
+        setEditorLanguage(currentLang);
+        saveState();
+
+    })();
+    </script>
+</body>
+</html>
