@@ -15,53 +15,56 @@
            DESIGN TOKENS
            ============================================ */
         :root {
-            --bg-app: #0a0a14;
-            --bg-panel: #0f0f1e;
-            --bg-panel-alt: #12122a;
-            --bg-surface: #181835;
-            --bg-hover: #1e1e40;
-            --bg-active: rgba(139, 92, 246, 0.12);
-            --bg-canvas: #1a1a2e;
-            --bg-canvas-grid: rgba(255,255,255,0.02);
+            /* === Natural Light Theme === */
+            --bg-app: #faf9f6;
+            --bg-panel: #ffffff;
+            --bg-panel-alt: #f3f1ec;
+            --bg-surface: #fdfdfc;
+            --bg-hover: #f3f1ec;
+            --bg-active: rgba(94, 107, 85, 0.14);
+            --bg-canvas: #ebe9e4;
+            --bg-titlebar: #faf9f6;
 
-            --border: rgba(255, 255, 255, 0.06);
-            --border-hover: rgba(255, 255, 255, 0.12);
-            --border-active: rgba(139, 92, 246, 0.5);
+            --border: #e6e4de;
+            --border-hover: #d2cec2;
+            --border-active: rgba(94, 107, 85, 0.55);
 
-            --text-primary: #eeeef8;
-            --text-secondary: #8888aa;
-            --text-muted: #555577;
-            --text-inverse: #0a0a14;
+            --text-primary: #2c312d;
+            --text-secondary: #4a504a;
+            --text-muted: #6b7270;
+            --text-inverse: #ffffff;
 
-            --purple: #8b5cf6;
-            --purple-light: #a78bfa;
-            --purple-dark: #6d28d9;
-            --cyan: #06b6d4;
-            --pink: #ec4899;
-            --green: #10b981;
+            --purple: #5e6b55;
+            --purple-light: #7a8a6f;
+            --purple-dark: #4a5443;
+            --cyan: #5e6b55;
+            --pink: #5e6b55;
+            --green: #22c55e;
             --red: #ef4444;
             --orange: #f59e0b;
             --blue: #3b82f6;
+            --teal: #14b8a6;
 
-            --gradient-brand: linear-gradient(135deg, #8b5cf6, #06b6d4);
-            --gradient-btn: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            --gradient-brand: linear-gradient(135deg, #5e6b55 0%, #7a8a6f 100%);
+            --gradient-btn: linear-gradient(135deg, #5e6b55 0%, #4a5443 100%);
 
-            --radius-xs: 4px;
-            --radius-sm: 6px;
+            --radius-xs: 3px;
+            --radius-sm: 5px;
             --radius-md: 8px;
             --radius-lg: 12px;
             --radius-xl: 16px;
 
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-            --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
-            --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
-            --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.2);
+            --shadow-sm: 0 1px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.15);
+            --shadow-lg: 0 12px 48px rgba(0,0,0,0.2);
+            --shadow-glow: 0 0 24px rgba(94, 107, 85, 0.25);
 
-            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 
             --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-            --toolbar-h: 48px;
+            --titlebar-h: 36px;
+            --toolbar-h: 52px;
             --sidebar-w: 260px;
             --props-w: 280px;
         }
@@ -107,6 +110,92 @@
         }
 
         /* ============================================
+           MACOS-STYLE TITLE BAR
+           ============================================ */
+        .titlebar {
+            height: var(--titlebar-h);
+            background: var(--bg-titlebar);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            flex-shrink: 0;
+            user-select: none;
+            position: relative;
+        }
+
+        .titlebar-dots {
+            display: flex;
+            gap: 6px;
+            z-index: 2;
+        }
+
+        .titlebar-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: filter 0.15s;
+        }
+
+        .titlebar-dot:hover { filter: brightness(1.3); }
+        .titlebar-dot.close { background: #ff5f57; }
+        .titlebar-dot.minimize { background: #febc2e; }
+        .titlebar-dot.maximize { background: #28c840; }
+
+        .titlebar-center {
+            position: absolute;
+            left: 0; right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .titlebar-tab {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            padding: 6px 18px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .titlebar-tab.active {
+            background: var(--bg-panel);
+            color: var(--text-primary);
+        }
+
+        .titlebar-tab i {
+            color: var(--purple);
+            font-size: 0.7rem;
+        }
+
+        .titlebar-win-controls {
+            margin-left: auto;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .titlebar-win-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ============================================
            TOOLBAR
            ============================================ */
         .toolbar {
@@ -115,8 +204,8 @@
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            padding: 0 12px;
-            gap: 8px;
+            padding: 0 14px;
+            gap: 6px;
             z-index: 100;
             flex-shrink: 0;
         }
@@ -131,11 +220,12 @@
         }
 
         .toolbar-brand .logo {
-            width: 28px; height: 28px;
+            width: 30px; height: 30px;
             background: var(--gradient-brand);
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; color: white; font-weight: 800;
+            font-size: 0.8rem; color: white; font-weight: 800;
+            box-shadow: 0 2px 10px rgba(124,92,246,0.35);
         }
 
         .toolbar-brand span {
@@ -281,6 +371,20 @@
             overflow: hidden;
         }
 
+        .sidebar-panel-header {
+            padding: 10px 14px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
         .sidebar-tabs {
             display: flex;
             border-bottom: 1px solid var(--border);
@@ -290,10 +394,10 @@
         .sidebar-tab {
             flex: 1;
             padding: 10px 0;
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 1px;
             color: var(--text-muted);
             text-align: center;
             transition: color var(--transition), border-color var(--transition);
@@ -326,47 +430,51 @@
         }
 
         .component-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-bottom: 12px;
         }
 
         .component-item {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            gap: 6px;
-            padding: 14px 8px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
+            gap: 10px;
+            padding: 8px 10px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
             cursor: grab;
-            transition: background var(--transition), border-color var(--transition), transform var(--transition);
+            transition: background var(--transition), color var(--transition);
             user-select: none;
         }
 
         .component-item:hover {
             background: var(--bg-hover);
-            border-color: var(--border-hover);
-            transform: translateY(-1px);
         }
 
         .component-item:active {
             cursor: grabbing;
-            transform: scale(0.97);
-            border-color: var(--purple);
+            background: var(--bg-active);
         }
 
         .component-item i {
-            font-size: 1.2rem;
+            font-size: 0.85rem;
             color: var(--purple-light);
+            width: 18px;
+            text-align: center;
+            flex-shrink: 0;
         }
 
         .component-item span {
-            font-size: 0.7rem;
+            font-size: 0.78rem;
             font-weight: 500;
             color: var(--text-secondary);
+        }
+
+        .component-item:hover span {
+            color: var(--text-primary);
         }
 
         /* Section blocks */
@@ -421,36 +529,47 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 7px 10px;
+            padding: 6px 10px;
             border-radius: var(--radius-sm);
             cursor: pointer;
             transition: background var(--transition);
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             color: var(--text-secondary);
+            border-left: 2px solid transparent;
         }
 
         .layer-item:hover {
             background: var(--bg-hover);
+            color: var(--text-primary);
         }
 
         .layer-item.active {
             background: var(--bg-active);
-            color: var(--purple);
+            color: var(--purple-light);
+            border-left-color: var(--purple);
         }
 
         .layer-item i {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             width: 16px;
             text-align: center;
+            color: var(--cyan);
+            opacity: 0.8;
+        }
+
+        .layer-item.active i {
+            color: var(--purple-light);
+            opacity: 1;
         }
 
         .layer-item .layer-name {
             flex: 1;
+            font-weight: 500;
         }
 
         .layer-item .layer-visibility {
             opacity: 0;
-            font-size: 0.65rem;
+            font-size: 0.62rem;
             color: var(--text-muted);
             transition: opacity var(--transition);
         }
@@ -465,27 +584,30 @@
         .canvas-area {
             flex: 1;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            background: var(--bg-app);
+            background: var(--bg-canvas);
             overflow: auto;
             position: relative;
             background-image:
-                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
-            background-size: 24px 24px;
+                linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+            background-size: 32px 32px;
+            padding-top: 32px;
+            padding-bottom: 60px;
         }
 
         .canvas-frame {
             position: relative;
             background: #ffffff;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-md);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.06), var(--shadow-lg);
             transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
 
         .canvas-frame.desktop {
-            width: 1200px;
+            width: 1100px;
         }
 
         .canvas-frame.tablet {
@@ -494,6 +616,26 @@
 
         .canvas-frame.mobile {
             width: 375px;
+        }
+
+        /* Canvas label bar (floating over canvas background) */
+        .canvas-label-bar {
+            position: absolute;
+            top: 10px;
+            left: 14px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .canvas-label-breadcrumb {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .canvas-viewport {
@@ -622,20 +764,14 @@
         .canvas-element.selected > .resize-handle {
             display: block;
         }
-        .resize-handle.se {
-            bottom: -6px; right: -6px;
-            cursor: se-resize;
-        }
-        .resize-handle.e {
-            top: 50%; right: -6px;
-            transform: translateY(-50%);
-            cursor: e-resize;
-        }
-        .resize-handle.s {
-            bottom: -6px; left: 50%;
-            transform: translateX(-50%);
-            cursor: s-resize;
-        }
+        .resize-handle.se { bottom: -6px; right: -6px; cursor: se-resize; }
+        .resize-handle.e { top: 50%; right: -6px; transform: translateY(-50%); cursor: e-resize; }
+        .resize-handle.s { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+        .resize-handle.n { top: -6px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+        .resize-handle.w { top: 50%; left: -6px; transform: translateY(-50%); cursor: w-resize; }
+        .resize-handle.nw { top: -6px; left: -6px; cursor: nw-resize; }
+        .resize-handle.ne { top: -6px; right: -6px; cursor: ne-resize; }
+        .resize-handle.sw { bottom: -6px; left: -6px; cursor: sw-resize; }
 
         .canvas-element > div:not(.element-actions):not(.resize-handle) {
             width: 100%;
@@ -964,8 +1100,8 @@
 
         /* Footer template */
         .el-footer {
-            background: #111;
-            color: #aaa;
+            background: transparent;
+            color: inherit;
             padding: 2em 1.8em 1.2em;
             width: 100%;
             height: 100%;
@@ -980,14 +1116,16 @@
         }
 
         .el-footer h4 {
-            color: white;
+            color: inherit;
+            font-weight: 700;
             font-size: 0.9em;
             margin-bottom: 0.6em;
         }
 
         .el-footer a {
             display: block;
-            color: #888;
+            color: inherit;
+            opacity: 0.8;
             font-size: 0.82em;
             padding: 0.2em 0;
         }
@@ -1029,13 +1167,13 @@
         }
 
         .props-header {
-            padding: 12px 16px;
+            padding: 11px 16px;
             border-bottom: 1px solid var(--border);
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
+            letter-spacing: 0.8px;
+            color: var(--text-secondary);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -1049,7 +1187,7 @@
         .props-body {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 0;
         }
 
         .props-empty {
@@ -1071,18 +1209,39 @@
         }
 
         .prop-group {
-            margin-bottom: 16px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid var(--border);
         }
 
         .prop-group-title {
-            font-size: 0.68rem;
+            font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.8px;
+            color: var(--text-secondary);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: color var(--transition);
+        }
+
+        .prop-group-title:hover {
+            color: var(--text-primary);
+        }
+
+        .prop-group-title::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.6rem;
             color: var(--text-muted);
-            padding: 4px 0 8px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 10px;
+            transition: transform var(--transition);
+        }
+
+        .prop-group-body {
+            padding: 0 16px 12px;
         }
 
         .prop-row {
@@ -1565,14 +1724,34 @@
     <!-- ========== APP ========== -->
     <div class="app" id="app">
 
+        <!-- ===== MACOS TITLE BAR ===== -->
+        <div class="titlebar">
+            <div class="titlebar-dots">
+                <span class="titlebar-dot close"></span>
+                <span class="titlebar-dot minimize"></span>
+                <span class="titlebar-dot maximize"></span>
+            </div>
+            <div class="titlebar-center">
+                <div class="titlebar-tab active">
+                    <i class="fas fa-leaf"></i>
+                    <span id="titlebarProjectName">WebMaker Studio — Untitled Project</span>
+                </div>
+            </div>
+            <div class="titlebar-win-controls">
+                <div class="titlebar-win-btn"><i class="fas fa-minus"></i></div>
+                <div class="titlebar-win-btn"><i class="fas fa-expand-arrows-alt" style="font-size:0.5rem;"></i></div>
+                <div class="titlebar-win-btn"><i class="fas fa-times"></i></div>
+            </div>
+        </div>
+
         <!-- ===== TOOLBAR ===== -->
         <div class="toolbar" id="toolbar">
             <div class="toolbar-brand">
-                <div class="logo"><i class="fas fa-code"></i></div>
+                <div class="logo"><i class="fas fa-leaf"></i></div>
                 <span>WebMaker</span>
-                <div class="lang-switcher" style="display:inline-flex;background:rgba(255,255,255,0.08);border-radius:6px;padding:2px;gap:2px;margin-left:8px;">
-                    <button class="lang-btn active" id="btnLangEn" style="border:none;padding:3px 8px;font-size:0.75rem;font-weight:700;border-radius:4px;cursor:pointer;background:#8b5cf6;color:white;">EN</button>
-                    <button class="lang-btn" id="btnLangSv" style="border:none;padding:3px 8px;font-size:0.75rem;font-weight:700;border-radius:4px;cursor:pointer;background:transparent;color:#94a3b8;">SV</button>
+                <div class="lang-switcher" style="display:inline-flex;background:rgba(0,0,0,0.04);border-radius:6px;padding:3px;border:1px solid var(--border);gap:2px;margin-left:8px;">
+                    <button class="lang-btn active" id="btnLangEn" style="border:none;padding:5px 12px;font-size:0.8rem;font-weight:600;border-radius:4px;cursor:pointer;background:var(--card-bg, #ffffff);color:var(--text-main, #2c312d);box-shadow:0 1px 3px rgba(0,0,0,0.08);">EN</button>
+                    <button class="lang-btn" id="btnLangSv" style="border:none;padding:5px 12px;font-size:0.8rem;font-weight:600;border-radius:4px;cursor:pointer;background:transparent;color:var(--text-muted);">SV</button>
                 </div>
             </div>
 
@@ -1635,6 +1814,10 @@
 
             <!-- LEFT SIDEBAR -->
             <div class="sidebar-left" id="sidebarLeft">
+                <div class="sidebar-panel-header">
+                    <span data-i18n="panel_layers">Layers &amp; Structure</span>
+                    <i class="fas fa-times" style="cursor:pointer;opacity:0.4;font-size:0.65rem;"></i>
+                </div>
                 <div class="sidebar-tabs">
                     <div class="sidebar-tab active" data-tab="elements" data-i18n="tab_elements">Elements</div>
                     <div class="sidebar-tab" data-tab="sections" data-i18n="tab_sections">Sections</div>
@@ -1746,6 +1929,26 @@
 
             <!-- CANVAS AREA -->
             <div class="canvas-area" id="canvasArea">
+                <div class="canvas-label-bar" id="canvasLabelBar">
+                    <span class="canvas-label-breadcrumb">
+                        <i class="fas fa-circle" style="color:var(--purple);font-size:0.45rem;"></i>
+                        Canvas
+                    </span>
+                </div>
+                    <div id="editorViewControls" style="display:none; position:absolute; top: 12px; right: 12px; background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius-md); padding:4px; gap:8px; align-items:center; box-shadow:var(--shadow-sm); z-index:100;">
+                        <!-- Theme Toggle -->
+                        <div id="editorThemeToggle" style="display:none; align-items:center; background:var(--bg-app); border-radius:var(--radius-sm); padding:2px;">
+                            <button class="lang-btn active" id="btnThemeLight" style="border:none;padding:4px 8px;font-size:0.75rem;border-radius:4px;cursor:pointer;background:var(--card-bg);color:var(--text-main);box-shadow:0 1px 2px rgba(0,0,0,0.1);"><i class="fas fa-sun"></i></button>
+                            <button class="lang-btn" id="btnThemeDark" style="border:none;padding:4px 8px;font-size:0.75rem;border-radius:4px;cursor:pointer;background:transparent;color:var(--text-muted);"><i class="fas fa-moon"></i></button>
+                        </div>
+                        <!-- Language Switcher -->
+                        <div id="editorLangSwitcher" style="display:none; align-items:center; background:var(--bg-app); border-radius:var(--radius-sm); padding:2px;">
+                            <select id="editorLangSelect" style="border:none; background:transparent; font-size:0.75rem; font-weight:600; color:var(--text-main); cursor:pointer; outline:none; padding:4px;">
+                                <option value="en">EN</option>
+                            </select>
+                            <button id="btnAddLang" style="border:none; background:transparent; color:var(--accent); cursor:pointer; padding:4px;" title="Add Language"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
                 <div class="canvas-frame desktop" id="canvasFrame">
                     <div class="canvas-viewport" id="canvasViewport">
                         <div class="drop-zone empty" id="dropZone">
@@ -1757,14 +1960,30 @@
 
             <!-- RIGHT SIDEBAR — PROPERTIES -->
             <div class="sidebar-right" id="sidebarRight">
-                <div class="props-header">
-                    <i class="fas fa-sliders-h"></i>
-                    <span data-i18n="props_title">Properties</span>
+                <div class="props-header" style="justify-content:space-between;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-sliders-h"></i>
+                        <span data-i18n="props_title">Properties</span>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size:0.65rem;opacity:0.4;"></i>
                 </div>
                 <div class="props-body" id="propsBody">
-                    <div class="props-empty" id="propsEmpty">
-                        <i class="fas fa-mouse-pointer"></i>
-                        <span data-i18n="props_empty">Click an element on canvas to edit properties</span>
+                    <div id="pagePropsContent">
+                        <div class="prop-group">
+                            <div class="prop-group-title" data-i18n="grp_page_settings">Page Settings</div>
+                            <div class="prop-group-body">
+                                <div class="prop-color-row">
+                                    <span class="prop-label" data-i18n="lbl_page_bg">Background</span>
+                                    <input class="prop-color-input" type="color" id="pageBgColor" value="#ffffff">
+                                    <input class="prop-input-sm" style="flex:2" type="text" id="pageBgText" value="#ffffff">
+                                </div>
+                                <div class="prop-color-row" style="margin-top: 8px;">
+                                    <span class="prop-label" data-i18n="lbl_page_color">Text Color</span>
+                                    <input class="prop-color-input" type="color" id="pageTextColor" value="#333333">
+                                    <input class="prop-input-sm" style="flex:2" type="text" id="pageTextText" value="#333333">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div id="propsContent" style="display:none;"></div>
                 </div>
@@ -1843,6 +2062,7 @@
                 tab_elements: "Elements",
                 tab_sections: "Sections",
                 tab_layers: "Layers",
+                panel_layers: "Layers & Structure",
                 sec_basic: "Basic",
                 sec_layout: "Layout",
                 sec_widgets: "Widgets",
@@ -1947,6 +2167,7 @@
                 tab_elements: "Element",
                 tab_sections: "Sektioner",
                 tab_layers: "Lager",
+                panel_layers: "Lager & Struktur",
                 sec_basic: "Grundläggande",
                 sec_layout: "Layout",
                 sec_widgets: "Moduler",
@@ -2052,13 +2273,22 @@
         let currentTool = 'cursor';
         let paintColor = '#8b5cf6';
 
+        // Advanced State
+        let pageSettings = {
+            light: { bg: '#ffffff', color: '#333333' },
+            dark: { bg: '#121218', color: '#f1f5f9' }
+        };
+        let activeTheme = 'light'; // 'light' or 'dark'
+        let siteLanguages = ['en'];
+        let activeSiteLang = 'en';
+
         // ========================
         // DOM
         // ========================
         const dropZone = document.getElementById('dropZone');
         const dropIndicator = document.getElementById('dropIndicator');
         const canvasFrame = document.getElementById('canvasFrame');
-        const propsEmpty = document.getElementById('propsEmpty');
+        const pagePropsContent = document.getElementById('pagePropsContent');
         const propsContent = document.getElementById('propsContent');
         const layersList = document.getElementById('layersList');
         const exportModal = document.getElementById('exportModal');
@@ -2075,7 +2305,7 @@
         // ========================
         function createElementData(type) {
             const id = 'el-' + (idCounter++);
-            const base = { id, type, styles: {} };
+            const base = { id, type, styles: {}, darkStyles: {}, translations: {} };
             const dict = i18n[currentLang] || i18n.en;
 
             switch(type) {
@@ -2104,9 +2334,9 @@
                 case 'lang-picker':
                     return { ...base, label: dict.el_lang_picker, languages: 'EN | SV | AZ' };
                 case 'section-nav':
-                    return { ...base, label: dict.el_nav, brandName: 'WebMaker', navLinks: currentLang === 'sv' ? ['Hem | /', 'Om oss | /about', 'Tjänster | /services', 'Kontakt | /contact'] : ['Home | /', 'About | /about', 'Services | /services', 'Contact | /contact'], styles: { backgroundColor: '#ffffff' } };
+                    return { ...base, label: dict.el_nav, brandName: 'WebMaker', navLinks: currentLang === 'sv' ? ['Hem | /', 'Om oss | /about', 'Tjänster | /services', 'Kontakt | /contact'] : ['Home | /', 'About | /about', 'Services | /services', 'Contact | /contact'], styles: { backgroundColor: 'transparent' } };
                 case 'section-hero':
-                    return { ...base, label: dict.el_hero, heroTitle: dict.def_hero_title, heroSubtitle: dict.def_hero_subtitle, heroBtnText: dict.def_hero_btn, heroBg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', heroTextColor: '#ffffff', heroBtnBg: '#ffffff', heroBtnColor: '#667eea' };
+                    return { ...base, label: dict.el_hero, heroTitle: dict.def_hero_title, heroSubtitle: dict.def_hero_subtitle, heroBtnText: dict.def_hero_btn, heroBg: 'transparent', heroTextColor: 'inherit', heroBtnBg: '#ffffff', heroBtnColor: '#667eea' };
                 case 'section-cards':
                     return { ...base, label: dict.el_cards, cards: [
                         { title: dict.def_card_1_title, desc: dict.def_card_1_desc, imgSrc: '' },
@@ -2140,21 +2370,18 @@
             `;
             div.appendChild(actions);
 
-            const resizerSE = document.createElement('div');
-            resizerSE.className = 'resize-handle se';
-            resizerSE.addEventListener('mousedown', (e) => initResize(e, el, div, 'se'));
-            
-            const resizerE = document.createElement('div');
-            resizerE.className = 'resize-handle e';
-            resizerE.addEventListener('mousedown', (e) => initResize(e, el, div, 'e'));
-            
-            const resizerS = document.createElement('div');
-            resizerS.className = 'resize-handle s';
-            resizerS.addEventListener('mousedown', (e) => initResize(e, el, div, 's'));
+            const resizerSE = document.createElement('div'); resizerSE.className = 'resize-handle se'; resizerSE.addEventListener('mousedown', (e) => initResize(e, el, div, 'se'));
+            const resizerE = document.createElement('div'); resizerE.className = 'resize-handle e'; resizerE.addEventListener('mousedown', (e) => initResize(e, el, div, 'e'));
+            const resizerS = document.createElement('div'); resizerS.className = 'resize-handle s'; resizerS.addEventListener('mousedown', (e) => initResize(e, el, div, 's'));
+            const resizerN = document.createElement('div'); resizerN.className = 'resize-handle n'; resizerN.addEventListener('mousedown', (e) => initResize(e, el, div, 'n'));
+            const resizerW = document.createElement('div'); resizerW.className = 'resize-handle w'; resizerW.addEventListener('mousedown', (e) => initResize(e, el, div, 'w'));
+            const resizerNW = document.createElement('div'); resizerNW.className = 'resize-handle nw'; resizerNW.addEventListener('mousedown', (e) => initResize(e, el, div, 'nw'));
+            const resizerNE = document.createElement('div'); resizerNE.className = 'resize-handle ne'; resizerNE.addEventListener('mousedown', (e) => initResize(e, el, div, 'ne'));
+            const resizerSW = document.createElement('div'); resizerSW.className = 'resize-handle sw'; resizerSW.addEventListener('mousedown', (e) => initResize(e, el, div, 'sw'));
 
-            div.appendChild(resizerSE);
-            div.appendChild(resizerE);
-            div.appendChild(resizerS);
+            div.appendChild(resizerSE); div.appendChild(resizerE); div.appendChild(resizerS);
+            div.appendChild(resizerN); div.appendChild(resizerW); div.appendChild(resizerNW);
+            div.appendChild(resizerNE); div.appendChild(resizerSW);
 
             // Apply inline styles
             if (el.styles) {
@@ -2162,6 +2389,29 @@
                     div.style[k] = el.styles[k];
                 });
             }
+            if (activeTheme === 'dark' && el.darkStyles) {
+                Object.keys(el.darkStyles).forEach(k => {
+                    if(el.darkStyles[k]) div.style[k] = el.darkStyles[k];
+                });
+            }
+
+            // Helper to get translated text
+            const t = (field) => {
+                if (activeSiteLang !== 'en' && el.translations && el.translations[activeSiteLang] && el.translations[activeSiteLang][field] !== undefined) {
+                    return el.translations[activeSiteLang][field];
+                }
+                return el[field];
+            };
+
+            const updateText = (field, val) => {
+                if (activeSiteLang === 'en') {
+                    el[field] = val;
+                } else {
+                    if (!el.translations) el.translations = {};
+                    if (!el.translations[activeSiteLang]) el.translations[activeSiteLang] = {};
+                    el.translations[activeSiteLang][field] = val;
+                }
+            };
 
             // Render by type
             switch(el.type) {
@@ -2170,9 +2420,9 @@
                     h.className = 'el-heading';
                     const tag = el.tag || 'h2';
                     const hEl = document.createElement(tag);
-                    hEl.textContent = el.text;
+                    hEl.textContent = t('text');
                     hEl.contentEditable = true;
-                    hEl.addEventListener('input', () => { el.text = hEl.textContent; });
+                    hEl.addEventListener('input', () => { updateText('text', hEl.textContent); });
                     hEl.addEventListener('focus', (e) => e.stopPropagation());
                     h.appendChild(hEl);
                     div.appendChild(h);
@@ -2182,8 +2432,8 @@
                     const p = document.createElement('div');
                     p.className = 'el-paragraph';
                     p.contentEditable = true;
-                    p.textContent = el.text;
-                    p.addEventListener('input', () => { el.text = p.textContent; });
+                    p.textContent = t('text');
+                    p.addEventListener('input', () => { updateText('text', p.textContent); });
                     p.addEventListener('focus', (e) => e.stopPropagation());
                     div.appendChild(p);
                     break;
@@ -2193,12 +2443,12 @@
                     wrap.className = 'el-button-wrap';
                     const btn = document.createElement('button');
                     btn.className = 'el-button';
-                    btn.textContent = el.text;
+                    btn.textContent = t('text');
                     btn.contentEditable = true;
-                    btn.style.background = el.btnColor || '#8b5cf6';
-                    btn.style.color = el.btnTextColor || '#ffffff';
+                    btn.style.background = (activeTheme === 'dark' && el.darkStyles && el.darkStyles.btnColor) ? el.darkStyles.btnColor : (el.btnColor || '#8b5cf6');
+                    btn.style.color = (activeTheme === 'dark' && el.darkStyles && el.darkStyles.btnTextColor) ? el.darkStyles.btnTextColor : (el.btnTextColor || '#ffffff');
                     btn.style.borderRadius = (el.btnRadius || 8) + 'px';
-                    btn.addEventListener('input', () => { el.text = btn.textContent; });
+                    btn.addEventListener('input', () => { updateText('text', btn.textContent); });
                     btn.addEventListener('focus', (e) => e.stopPropagation());
                     wrap.appendChild(btn);
                     div.appendChild(wrap);
@@ -2325,8 +2575,8 @@
                     const wrap = document.createElement('div');
                     wrap.style.padding = '12px 24px';
                     wrap.innerHTML = `
-                        <button class="el-button" style="background:#2c312d;color:#fff;border-radius:20px;padding:8px 18px;font-size:0.85rem;display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;">
-                            <i class="fas fa-moon"></i> <span>Dark / Light Mode</span>
+                        <button class="el-button" style="background:#2c312d;color:#fff;border-radius:50%;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border:none;cursor:pointer;">
+                            <i class="fas fa-moon"></i>
                         </button>
                     `;
                     div.appendChild(wrap);
@@ -2335,10 +2585,10 @@
                 case 'lang-picker': {
                     const wrap = document.createElement('div');
                     wrap.style.padding = '12px 24px';
-                    const langs = (el.languages || 'EN | SV | AZ').split('|').map(s => s.trim()).filter(Boolean);
+                    const langs = siteLanguages;
                     wrap.innerHTML = `
                         <div style="display:inline-flex;background:rgba(0,0,0,0.05);border-radius:6px;padding:3px;gap:4px;border:1px solid #e0e0e0;">
-                            ${langs.map((l, i) => `<span style="padding:4px 10px;font-size:0.8rem;font-weight:600;border-radius:4px;background:${i===0?'#8b5cf6':'transparent'};color:${i===0?'#fff':'#555'};cursor:pointer;">${escHtml(l)}</span>`).join('')}
+                            ${langs.map((l, i) => `<span style="padding:4px 10px;font-size:0.8rem;font-weight:600;border-radius:4px;background:${l === activeSiteLang ? '#5e6b55' : 'transparent'};color:${l === activeSiteLang ? '#fff' : '#555'};cursor:pointer;">${escHtml(l.toUpperCase())}</span>`).join('')}
                         </div>
                     `;
                     div.appendChild(wrap);
@@ -2348,7 +2598,7 @@
                     const nav = document.createElement('div');
                     nav.className = 'el-nav';
                     nav.innerHTML = `
-                        <div class="el-nav-brand">${el.brandName}</div>
+                        <div class="el-nav-brand">${escHtml(t('brandName'))}</div>
                         <div class="el-nav-links">
                             ${(el.navLinks || []).map(l => {
                                 const parts = l.split('|');
@@ -2363,12 +2613,12 @@
                 case 'section-hero': {
                     const hero = document.createElement('div');
                     hero.className = 'el-hero';
-                    hero.style.background = el.heroBg || (el.styles && (el.styles.background || el.styles.backgroundColor)) || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                    hero.style.color = el.heroTextColor || (el.styles && el.styles.color) || '#ffffff';
+                    hero.style.background = el.heroBg || (el.styles && (el.styles.background || el.styles.backgroundColor)) || 'transparent';
+                    hero.style.color = el.heroTextColor || (el.styles && el.styles.color) || 'inherit';
                     hero.innerHTML = `
-                        <h1 style="color:inherit;">${escHtml(el.heroTitle)}</h1>
-                        <p style="color:inherit;">${escHtml(el.heroSubtitle)}</p>
-                        <button class="el-button" style="background:${el.heroBtnBg || 'white'};color:${el.heroBtnColor || '#667eea'};">${escHtml(el.heroBtnText)}</button>
+                        <h1 style="color:inherit;">${escHtml(t('heroTitle'))}</h1>
+                        <p style="color:inherit;">${escHtml(t('heroSubtitle'))}</p>
+                        <button class="el-button" style="background:${(activeTheme === 'dark' && el.darkStyles && el.darkStyles.heroBtnBg) ? el.darkStyles.heroBtnBg : (el.heroBtnBg || 'white')};color:${(activeTheme === 'dark' && el.darkStyles && el.darkStyles.heroBtnColor) ? el.darkStyles.heroBtnColor : (el.heroBtnColor || '#667eea')};">${escHtml(t('heroBtnText'))}</button>
                     `;
                     div.appendChild(hero);
                     break;
@@ -2384,8 +2634,8 @@
                             <div class="el-card">
                                 <div class="el-card-img">${imgHtml}</div>
                                 <div class="el-card-body">
-                                    <h3>${escHtml(card.title)}</h3>
-                                    <p>${escHtml(card.desc)}</p>
+                                    <h3>${escHtml(t('cards_' + ci + '_title') || card.title)}</h3>
+                                    <p>${escHtml(t('cards_' + ci + '_desc') || card.desc)}</p>
                                 </div>
                             </div>
                         `;
@@ -2399,8 +2649,8 @@
                     footer.innerHTML = `
                         <div class="el-footer-grid">
                             <div>
-                                <h4>${el.footerBrand}</h4>
-                                <p style="font-size:0.85rem;color:#888;">${el.footerDesc}</p>
+                                <h4>${escHtml(t('footerBrand'))}</h4>
+                                <p style="font-size:0.85rem;color:#888;">${escHtml(t('footerDesc'))}</p>
                             </div>
                             <div>
                                 <h4>Məhsul</h4>
@@ -2415,7 +2665,7 @@
                                 <a href="#">Sənədlər</a><a href="#">Əlaqə</a><a href="#">FAQ</a>
                             </div>
                         </div>
-                        <div class="el-footer-bottom">&copy; 2026 ${el.footerBrand}. Bütün hüquqlar qorunur.</div>
+                        <div class="el-footer-bottom">&copy; 2026 ${escHtml(t('footerBrand'))}. Bütün hüquqlar qorunur.</div>
                     `;
                     div.appendChild(footer);
                     break;
@@ -2519,7 +2769,102 @@
                 });
             }
 
+            updateEditorViewControls();
             renderLayers();
+        }
+
+        // Bind editor view controls
+        document.getElementById('btnThemeLight').addEventListener('click', () => {
+            activeTheme = 'light';
+            document.getElementById('btnThemeLight').classList.add('active');
+            document.getElementById('btnThemeLight').style.background = 'var(--card-bg)';
+            document.getElementById('btnThemeLight').style.color = 'var(--text-main)';
+            document.getElementById('btnThemeLight').style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+            document.getElementById('btnThemeDark').classList.remove('active');
+            document.getElementById('btnThemeDark').style.background = 'transparent';
+            document.getElementById('btnThemeDark').style.color = 'var(--text-muted)';
+            document.getElementById('btnThemeDark').style.boxShadow = 'none';
+            renderCanvas();
+            if(selectedId) renderProperties();
+            else updatePagePropsUI();
+        });
+
+        document.getElementById('btnThemeDark').addEventListener('click', () => {
+            activeTheme = 'dark';
+            document.getElementById('btnThemeDark').classList.add('active');
+            document.getElementById('btnThemeDark').style.background = 'var(--card-bg)';
+            document.getElementById('btnThemeDark').style.color = 'var(--text-main)';
+            document.getElementById('btnThemeDark').style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+            document.getElementById('btnThemeLight').classList.remove('active');
+            document.getElementById('btnThemeLight').style.background = 'transparent';
+            document.getElementById('btnThemeLight').style.color = 'var(--text-muted)';
+            document.getElementById('btnThemeLight').style.boxShadow = 'none';
+            renderCanvas();
+            if(selectedId) renderProperties();
+            else updatePagePropsUI();
+        });
+
+        document.getElementById('editorLangSelect').addEventListener('change', (e) => {
+            activeSiteLang = e.target.value;
+            renderCanvas();
+            if(selectedId) renderProperties();
+        });
+
+        document.getElementById('btnAddLang').addEventListener('click', () => {
+            const newLang = prompt('Enter language code (e.g., tr, de, es):');
+            if (newLang && newLang.trim().length > 0) {
+                const code = newLang.trim().toLowerCase();
+                if (!siteLanguages.includes(code)) {
+                    siteLanguages.push(code);
+                    activeSiteLang = code;
+                    renderCanvas();
+                    if(selectedId) renderProperties();
+                }
+            }
+        });
+
+        function updateEditorViewControls() {
+            const hasThemeToggle = elements.some(e => e.type === 'theme-toggle');
+            const hasLangPicker = elements.some(e => e.type === 'lang-picker');
+            const controls = document.getElementById('editorViewControls');
+            const themeDiv = document.getElementById('editorThemeToggle');
+            const langDiv = document.getElementById('editorLangSwitcher');
+
+            if (hasThemeToggle || hasLangPicker) {
+                controls.style.display = 'flex';
+                themeDiv.style.display = hasThemeToggle ? 'flex' : 'none';
+                langDiv.style.display = hasLangPicker ? 'flex' : 'none';
+
+                // Populate languages
+                if (hasLangPicker) {
+                    const select = document.getElementById('editorLangSelect');
+                    select.innerHTML = '';
+                    siteLanguages.forEach(lang => {
+                        const opt = document.createElement('option');
+                        opt.value = lang;
+                        opt.textContent = lang.toUpperCase();
+                        if (lang === activeSiteLang) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                }
+            } else {
+                controls.style.display = 'none';
+            }
+
+            // Apply canvas theme background
+            const canvasArea = document.querySelector('.canvas-area');
+            const canvasFrame = document.querySelector('.canvas-frame');
+            
+            if (activeTheme === 'dark') {
+                canvasArea.style.backgroundColor = '#1e1e2d';
+                canvasArea.style.backgroundImage = 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)';
+            } else {
+                canvasArea.style.backgroundColor = 'var(--bg-canvas)';
+                canvasArea.style.backgroundImage = 'linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)';
+            }
+            
+            canvasFrame.style.backgroundColor = pageSettings[activeTheme].bg;
+            canvasFrame.style.color = pageSettings[activeTheme].color;
         }
 
         // ========================
@@ -2560,7 +2905,8 @@
             selectedId = null;
             renderCanvas();
             propsContent.style.display = 'none';
-            propsEmpty.style.display = 'flex';
+            pagePropsContent.style.display = 'block';
+            updatePagePropsUI();
         }
 
         // ========================
@@ -2570,18 +2916,33 @@
             const el = elements.find(e => e.id === selectedId);
             if (!el) {
                 propsContent.style.display = 'none';
-                propsEmpty.style.display = 'flex';
+                pagePropsContent.style.display = 'block';
+                updatePagePropsUI();
                 return;
             }
 
-            propsEmpty.style.display = 'none';
+            pagePropsContent.style.display = 'none';
             propsContent.style.display = 'block';
 
             const dict = i18n[currentLang] || i18n.en;
+            const t = (field) => {
+                if (activeSiteLang !== 'en' && el.translations && el.translations[activeSiteLang] && el.translations[activeSiteLang][field] !== undefined) {
+                    return el.translations[activeSiteLang][field];
+                }
+                return el[field];
+            };
+            const s = (field) => {
+                if (activeTheme === 'dark' && el.darkStyles && el.darkStyles[field] !== undefined) return el.darkStyles[field];
+                return el.styles && el.styles[field];
+            };
+            const ds = (field) => {
+                if (activeTheme === 'dark' && el.darkStyles && el.darkStyles[field] !== undefined) return el.darkStyles[field];
+                return el[field];
+            };
             let html = '';
 
             // Content group
-            html += `<div class="prop-group"><div class="prop-group-title">${dict.grp_content}</div>`;
+            html += `<div class="prop-group"><div class="prop-group-title">${dict.grp_content}</div><div class="prop-group-body">`;
 
             switch(el.type) {
                 case 'heading':
@@ -2609,7 +2970,7 @@
                     html += `
                         <div class="prop-row">
                             <span class="prop-label">${dict.lbl_text}</span>
-                            <input class="prop-input" type="text" value="${escHtml(el.text)}" data-prop="text">
+                            <input class="prop-input" type="text" value="${escHtml(t('text'))}" data-prop="text">
                         </div>
                         <div class="prop-row">
                             <span class="prop-label">${dict.lbl_url}</span>
@@ -2617,12 +2978,12 @@
                         </div>
                         <div class="prop-color-row">
                             <span class="prop-label">${dict.lbl_color}</span>
-                            <input class="prop-color-input" type="color" value="${el.btnColor || '#8b5cf6'}" data-prop="btnColor">
-                            <input class="prop-input-sm" type="text" value="${el.btnColor || '#8b5cf6'}" data-prop="btnColor">
+                            <input class="prop-color-input" type="color" value="${ds('btnColor') || '#8b5cf6'}" data-prop="btnColor">
+                            <input class="prop-input-sm" type="text" value="${ds('btnColor') || '#8b5cf6'}" data-prop="btnColor">
                         </div>
                         <div class="prop-color-row">
                             <span class="prop-label">${dict.lbl_text_color}</span>
-                            <input class="prop-color-input" type="color" value="${el.btnTextColor || '#ffffff'}" data-prop="btnTextColor">
+                            <input class="prop-color-input" type="color" value="${ds('btnTextColor') || '#ffffff'}" data-prop="btnTextColor">
                         </div>
                         <div class="prop-row">
                             <span class="prop-label">${dict.lbl_radius}</span>
@@ -2687,12 +3048,12 @@
                     html += `
                         <div class="prop-row">
                             <span class="prop-label">${dict.lbl_title}</span>
-                            <input class="prop-input" type="text" value="${escHtml(el.heroTitle)}" data-prop="heroTitle">
+                            <input class="prop-input" type="text" value="${escHtml(t('heroTitle'))}" data-prop="heroTitle">
                         </div>
-                        <textarea class="prop-textarea" data-prop="heroSubtitle" placeholder="Subtitle...">${escHtml(el.heroSubtitle)}</textarea>
+                        <textarea class="prop-textarea" data-prop="heroSubtitle" placeholder="Subtitle...">${escHtml(t('heroSubtitle'))}</textarea>
                         <div class="prop-row" style="margin-top:8px;">
                             <span class="prop-label">${dict.lbl_button}</span>
-                            <input class="prop-input" type="text" value="${escHtml(el.heroBtnText)}" data-prop="heroBtnText">
+                            <input class="prop-input" type="text" value="${escHtml(t('heroBtnText'))}" data-prop="heroBtnText">
                         </div>
                     `;
                     break;
@@ -2724,11 +3085,11 @@
                                 </div>
                                 <div class="prop-row" style="margin-bottom:4px;">
                                     <span class="prop-label">${dict.lbl_title}</span>
-                                    <input class="prop-input" type="text" value="${escHtml(card.title || '')}" data-card-idx="${idx}" data-card-field="title">
+                                    <input class="prop-input" type="text" value="${escHtml(t('cards_' + idx + '_title') || card.title || '')}" data-card-idx="${idx}" data-card-field="title">
                                 </div>
                                 <div class="prop-row">
                                     <span class="prop-label">${dict.lbl_desc}</span>
-                                    <input class="prop-input" type="text" value="${escHtml(card.desc || '')}" data-card-idx="${idx}" data-card-field="desc">
+                                    <input class="prop-input" type="text" value="${escHtml(t('cards_' + idx + '_desc') || card.desc || '')}" data-card-idx="${idx}" data-card-field="desc">
                                 </div>
                             </div>
                         `;
@@ -2738,28 +3099,30 @@
                     html += `
                         <div class="prop-row">
                             <span class="prop-label">${dict.lbl_brand}</span>
-                            <input class="prop-input" type="text" value="${escHtml(el.footerBrand)}" data-prop="footerBrand">
+                            <input class="prop-input" type="text" value="${escHtml(t('footerBrand'))}" data-prop="footerBrand">
                         </div>
                         <div class="prop-row">
                             <span class="prop-label">${dict.lbl_desc}</span>
-                            <input class="prop-input" type="text" value="${escHtml(el.footerDesc)}" data-prop="footerDesc">
+                            <input class="prop-input" type="text" value="${escHtml(t('footerDesc'))}" data-prop="footerDesc">
                         </div>
                     `;
                     break;
             }
-            html += `</div>`;
+            html += `</div></div>`;
 
             // Spacing group
             html += `
                 <div class="prop-group">
                     <div class="prop-group-title">${dict.grp_spacing}</div>
-                    <div class="prop-row">
-                        <span class="prop-label">${dict.lbl_padding}</span>
-                        <input class="prop-input-sm" type="number" value="${parseInt(el.styles.padding) || ''}" data-style="padding" placeholder="0" min="0"> px
-                    </div>
-                    <div class="prop-row">
-                        <span class="prop-label">${dict.lbl_margin}</span>
-                        <input class="prop-input-sm" type="number" value="${parseInt(el.styles.marginTop) || ''}" data-style="marginTop" placeholder="0" min="0"> px
+                    <div class="prop-group-body">
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_padding}</span>
+                            <input class="prop-input-sm" type="number" value="${parseInt(s('padding')) || ''}" data-style="padding" placeholder="0" min="0"> px
+                        </div>
+                        <div class="prop-row">
+                            <span class="prop-label">${dict.lbl_margin}</span>
+                            <input class="prop-input-sm" type="number" value="${parseInt(s('marginTop')) || ''}" data-style="marginTop" placeholder="0" min="0"> px
+                        </div>
                     </div>
                 </div>
             `;
@@ -2768,10 +3131,12 @@
             html += `
                 <div class="prop-group">
                     <div class="prop-group-title">${dict.grp_bg}</div>
-                    <div class="prop-color-row">
-                        <span class="prop-label">${dict.lbl_bg}</span>
-                        <input class="prop-color-input" type="color" value="${(el.styles.background && el.styles.background.startsWith('#')) ? el.styles.background : (el.styles.backgroundColor || '#ffffff')}" data-style="backgroundColor">
-                        <input class="prop-input-sm" style="flex:2" type="text" value="${escHtml(el.styles.background || el.styles.backgroundColor || '')}" data-style="background" placeholder="#fff / url(...)">
+                    <div class="prop-group-body">
+                        <div class="prop-color-row">
+                            <span class="prop-label">${dict.lbl_bg}</span>
+                            <input class="prop-color-input" type="color" value="${(s('background') && s('background').startsWith('#')) ? s('background') : (s('backgroundColor') || '#ffffff')}" data-style="backgroundColor">
+                            <input class="prop-input-sm" style="flex:2" type="text" value="${escHtml(s('background') || s('backgroundColor') || '')}" data-style="background" placeholder="#fff / url(...)">
+                        </div>
                     </div>
                 </div>
             `;
@@ -2780,8 +3145,10 @@
             html += `
                 <div class="prop-group">
                     <div class="prop-group-title">${dict.grp_actions}</div>
+                    <div class="prop-group-body">
                     <button class="prop-btn" onclick="window._duplicateSelected()"><i class="fas fa-clone"></i> ${dict.btn_duplicate}</button>
                     <button class="prop-btn danger" onclick="window._deleteSelected()"><i class="fas fa-trash"></i> ${dict.btn_delete}</button>
+                    </div>
                 </div>
             `;
 
@@ -2795,13 +3162,27 @@
                     let val = input.value;
 
                     if (prop === 'items') {
-                        el.items = val.split('\n').filter(s => s.trim());
+                        el.items = val.split('\n').filter(x => x.trim());
                     } else if (prop === 'navLinks') {
-                        el.navLinks = val.split('\n').filter(s => s.trim());
+                        el.navLinks = val.split('\n').filter(x => x.trim());
                     } else if (prop === 'height' || prop === 'btnRadius') {
                         el[prop] = parseInt(val) || 0;
+                    } else if (['btnColor', 'btnTextColor', 'dividerColor', 'heroBtnBg', 'heroBtnColor'].includes(prop)) {
+                        if (activeTheme === 'dark') {
+                            if (!el.darkStyles) el.darkStyles = {};
+                            el.darkStyles[prop] = val;
+                        } else {
+                            el[prop] = val;
+                        }
                     } else {
-                        el[prop] = val;
+                        // Text translation fields
+                        if (activeSiteLang === 'en') {
+                            el[prop] = val;
+                        } else {
+                            if (!el.translations) el.translations = {};
+                            if (!el.translations[activeSiteLang]) el.translations[activeSiteLang] = {};
+                            el.translations[activeSiteLang][prop] = val;
+                        }
                     }
 
                     // Sync paired color/text inputs
@@ -2821,12 +3202,13 @@
                     const style = input.dataset.style;
                     const val = input.value;
 
+                    const targetStyles = (activeTheme === 'dark') ? (el.darkStyles = el.darkStyles || {}) : (el.styles = el.styles || {});
                     if (input.type === 'color') {
-                        el.styles[style] = val;
+                        targetStyles[style] = val;
                     } else if (input.type === 'number') {
-                        el.styles[style] = val ? val + 'px' : '';
+                        targetStyles[style] = val ? val + 'px' : '';
                     } else {
-                        el.styles[style] = val;
+                        targetStyles[style] = val;
                     }
 
                     saveState();
@@ -2840,13 +3222,52 @@
                     const idx = parseInt(input.dataset.cardIdx);
                     const field = input.dataset.cardField;
                     if (el.cards && el.cards[idx]) {
-                        el.cards[idx][field] = input.value;
+                        if (['title', 'desc'].includes(field)) {
+                            if (activeSiteLang === 'en') {
+                                el.cards[idx][field] = input.value;
+                            } else {
+                                if (!el.translations) el.translations = {};
+                                if (!el.translations[activeSiteLang]) el.translations[activeSiteLang] = {};
+                                el.translations[activeSiteLang]['cards_' + idx + '_' + field] = input.value;
+                            }
+                        } else {
+                            el.cards[idx][field] = input.value;
+                        }
                         saveState();
                         renderCanvas();
                     }
                 });
             });
         }
+
+        function updatePagePropsUI() {
+            const themeSettings = pageSettings[activeTheme];
+            document.getElementById('pageBgColor').value = themeSettings.bg;
+            document.getElementById('pageBgText').value = themeSettings.bg;
+            document.getElementById('pageTextColor').value = themeSettings.color;
+            document.getElementById('pageTextText').value = themeSettings.color;
+        }
+
+        // Bind page properties inputs
+        ['pageBgColor', 'pageBgText'].forEach(id => {
+            document.getElementById(id).addEventListener('input', (e) => {
+                const val = e.target.value;
+                document.getElementById('pageBgColor').value = val;
+                document.getElementById('pageBgText').value = val;
+                pageSettings[activeTheme].bg = val;
+                renderCanvas();
+            });
+        });
+
+        ['pageTextColor', 'pageTextText'].forEach(id => {
+            document.getElementById(id).addEventListener('input', (e) => {
+                const val = e.target.value;
+                document.getElementById('pageTextColor').value = val;
+                document.getElementById('pageTextText').value = val;
+                pageSettings[activeTheme].color = val;
+                renderCanvas();
+            });
+        });
 
         window._addCard = (elId) => {
             const el = elements.find(e => e.id === elId);
@@ -2898,9 +3319,22 @@
                     div.style.width = w;
                     if (!el.styles) el.styles = {};
                     el.styles.width = w;
+                } else if (dir.includes('w')) {
+                    newWidth = Math.max(30, startWidth - (moveEvent.clientX - startX));
+                    const w = newWidth + 'px';
+                    div.style.width = w;
+                    if (!el.styles) el.styles = {};
+                    el.styles.width = w;
                 }
+                
                 if (dir.includes('s')) {
                     newHeight = Math.max(30, startHeight + (moveEvent.clientY - startY));
+                    const h = newHeight + 'px';
+                    div.style.height = h;
+                    if (!el.styles) el.styles = {};
+                    el.styles.height = h;
+                } else if (dir.includes('n')) {
+                    newHeight = Math.max(30, startHeight - (moveEvent.clientY - startY));
                     const h = newHeight + 'px';
                     div.style.height = h;
                     if (!el.styles) el.styles = {};
@@ -2979,7 +3413,7 @@
                     saveState();
                     renderCanvas();
                     propsContent.style.display = 'none';
-                    propsEmpty.style.display = 'flex';
+                    pagePropsContent.style.display = 'block';
                     showToast('Element silindi');
                     break;
                 }
@@ -3155,7 +3589,8 @@
             selectedId = null;
             renderCanvas();
             propsContent.style.display = 'none';
-            propsEmpty.style.display = 'flex';
+            pagePropsContent.style.display = 'block';
+            updatePagePropsUI();
             showToast((i18n[currentLang] || i18n.en).toast_undone);
         }
 
@@ -3166,7 +3601,8 @@
             selectedId = null;
             renderCanvas();
             propsContent.style.display = 'none';
-            propsEmpty.style.display = 'flex';
+            pagePropsContent.style.display = 'block';
+            updatePagePropsUI();
             showToast((i18n[currentLang] || i18n.en).toast_redone);
         }
 
@@ -3191,7 +3627,70 @@
 
         function generateHTML() {
             let body = '';
-            elements.forEach(el => { body += generateElementHTML(el); });
+            let darkCss = '';
+            
+            elements.forEach(el => {
+                body += generateElementHTML(el);
+                
+                if (el.darkStyles) {
+                    const ds = el.darkStyles;
+                    let rules = [];
+                    Object.keys(ds).forEach(k => {
+                        if (ds[k]) {
+                            // Map js camelCase to css dash-case
+                            const prop = camelToDash(k);
+                            rules.push(`${prop}: ${ds[k]} !important;`);
+                        }
+                    });
+                    if (rules.length > 0) {
+                        darkCss += `        body.dark-mode #${el.id} { ${rules.join(' ')} }\n`;
+                    }
+                }
+            });
+
+            // Generate multi-language JS runtime script
+            const langScript = `
+    <script>
+        const siteTranslations = ${JSON.stringify(elements.reduce((acc, el) => { if(el.translations) acc[el.id] = el.translations; return acc; }, {}))};
+        const siteLanguages = ${JSON.stringify(siteLanguages)};
+        let activeSiteLang = 'en';
+
+        function switchLanguage(lang) {
+            activeSiteLang = lang;
+            // Update document lang
+            document.documentElement.lang = lang;
+            
+            // Loop through all elements that have translations
+            Object.keys(siteTranslations).forEach(id => {
+                const tr = siteTranslations[id][lang];
+                if (!tr && lang !== 'en') return; // Fallback to EN if translation missing and not EN?
+                
+                const elNode = document.getElementById(id);
+                if (!elNode) return;
+                
+                // We will rely on data-i18n attributes on the elements
+                const texts = elNode.querySelectorAll('[data-i18n-field]');
+                texts.forEach(node => {
+                    const field = node.dataset.i18nField;
+                    if (lang === 'en') {
+                        // Fallback to original text stored in data-en-text
+                        if (node.dataset.enText !== undefined) {
+                            node.innerHTML = node.dataset.enText;
+                        }
+                    } else if (tr && tr[field] !== undefined) {
+                        node.innerHTML = tr[field]; // Using innerHTML as escHtml is already done during authoring? Actually during export we output raw, let's use innerText or just assume safe HTML
+                    }
+                });
+            });
+            
+            // Update language picker UI if exists
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.style.background = (btn.dataset.lang === lang) ? '#5e6b55' : 'transparent';
+                btn.style.color = (btn.dataset.lang === lang) ? '#fff' : '#333';
+            });
+        }
+    <\/script>
+            `;
 
             return `<!DOCTYPE html>
 <html lang="en">
@@ -3203,19 +3702,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; color: #333; transition: background 0.3s, color 0.3s; }
+        body { font-family: 'Inter', sans-serif; color: ${pageSettings.light.color}; background-color: ${pageSettings.light.bg}; transition: background 0.3s, color 0.3s; }
         img { max-width: 100%; display: block; }
         a { text-decoration: none; color: inherit; }
         
         /* Dark Mode Support */
-        body.dark-mode { background-color: #121218 !important; color: #f1f5f9 !important; }
+        body.dark-mode { background-color: ${pageSettings.dark.bg} !important; color: ${pageSettings.dark.color} !important; }
         body.dark-mode div, body.dark-mode section, body.dark-mode nav, body.dark-mode footer { border-color: rgba(255,255,255,0.1) !important; }
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode p, body.dark-mode a { color: #f1f5f9 !important; }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode p, body.dark-mode a { color: ${pageSettings.dark.color} !important; }
         body.dark-mode .el-card { background-color: #1e1e2d !important; color: #f1f5f9 !important; border-color: #2d2d3f !important; }
+        
+${darkCss}
     </style>
 </head>
 <body>
 ${body}
+${langScript}
 </body>
 </html>`;
         }
@@ -3229,70 +3731,70 @@ ${body}
                 case 'heading': {
                     const tag = el.tag || 'h2';
                     const sizes = { h1: '2.2em', h2: '1.7em', h3: '1.3em' };
-                    return `  <div${styAttr}><${tag} style="padding:0.8em 1.2em;font-size:${sizes[tag]};color:#111;margin:0;">${escHtml(el.text)}</${tag}></div>\n`;
+                    return `  <div id="${el.id}"${styAttr}><${tag} style="padding:0.8em 1.2em;font-size:${sizes[tag]};color:#111;margin:0;" data-i18n-field="text" data-en-text="${escHtml(el.text)}">${escHtml(el.text)}</${tag}></div>\n`;
                 }
                 case 'paragraph':
-                    return `  <p style="padding:0.6em 1.2em;font-size:1em;line-height:1.6;color:#555;${styStr}">${escHtml(el.text)}</p>\n`;
+                    return `  <p id="${el.id}" style="padding:0.6em 1.2em;font-size:1em;line-height:1.6;color:#555;${styStr}" data-i18n-field="text" data-en-text="${escHtml(el.text)}">${escHtml(el.text)}</p>\n`;
                 case 'button': {
                     const btnTag = el.url ? `a href="${escHtml(el.url)}"` : 'button';
                     const closeTag = el.url ? 'a' : 'button';
-                    return `  <div style="padding:0.6em 1.2em;${styStr}"><${btnTag} style="display:inline-block;padding:0.65em 1.5em;background:${el.btnColor};color:${el.btnTextColor};border:none;border-radius:${el.btnRadius}px;font-size:0.95em;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;text-decoration:none;">${escHtml(el.text)}</${closeTag}></div>\n`;
+                    return `  <div id="${el.id}" style="padding:0.6em 1.2em;${styStr}"><${btnTag} style="display:inline-block;padding:0.65em 1.5em;background:${el.btnColor};color:${el.btnTextColor};border:none;border-radius:${el.btnRadius}px;font-size:0.95em;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;text-decoration:none;" data-i18n-field="text" data-en-text="${escHtml(el.text)}">${escHtml(el.text)}</${closeTag}></div>\n`;
                 }
                 case 'image':
                     return el.src
-                        ? `  <div style="padding:0.6em 1.2em;${styStr}"><img src="${escHtml(el.src)}" alt="${escHtml(el.alt)}" style="max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;border-radius:8px;"></div>\n`
+                        ? `  <div id="${el.id}" style="padding:0.6em 1.2em;${styStr}"><img src="${escHtml(el.src)}" alt="${escHtml(el.alt)}" style="max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;border-radius:8px;"></div>\n`
                         : '';
                 case 'video': {
                     if (!el.videoUrl) return '';
                     const ytMatch = el.videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
                     if (ytMatch) {
-                        return `  <div style="padding:0.6em 1.2em;${styStr}"><div style="position:relative;width:100%;padding-bottom:56.25%;"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div></div>\n`;
+                        return `  <div id="${el.id}" style="padding:0.6em 1.2em;${styStr}"><div style="position:relative;width:100%;padding-bottom:56.25%;"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div></div>\n`;
                     }
-                    return `  <div style="padding:0.6em 1.2em;${styStr}"><video src="${escHtml(el.videoUrl)}" controls style="width:100%;border-radius:8px;"></video></div>\n`;
+                    return `  <div id="${el.id}" style="padding:0.6em 1.2em;${styStr}"><video src="${escHtml(el.videoUrl)}" controls style="width:100%;border-radius:8px;"></video></div>\n`;
                 }
                 case 'divider':
-                    return `  <div style="padding:0.5em 1.2em;${styStr}"><hr style="border:none;height:1px;background:${el.dividerColor || '#e0e0e0'};"></div>\n`;
+                    return `  <div id="${el.id}" style="padding:0.5em 1.2em;${styStr}"><hr style="border:none;height:1px;background:${el.dividerColor || '#e0e0e0'};"></div>\n`;
                 case 'spacer':
-                    return `  <div style="height:${el.height || 40}px;${styStr}"></div>\n`;
+                    return `  <div id="${el.id}" style="height:${el.height || 40}px;${styStr}"></div>\n`;
                 case 'list':
-                    return `  <div style="padding:0.75em 1.5em;${styStr}"><ul style="padding-left:1.5em;">${(el.items||[]).map(i=>`<li style="padding:0.25em 0;color:#555;font-size:0.95em;">${escHtml(i)}</li>`).join('')}</ul></div>\n`;
+                    return `  <div id="${el.id}" style="padding:0.75em 1.5em;${styStr}"><ul style="padding-left:1.5em;">${(el.items||[]).map(i=>`<li style="padding:0.25em 0;color:#555;font-size:0.95em;">${escHtml(i)}</li>`).join('')}</ul></div>\n`;
                 case 'columns-2':
                 case 'columns-3': {
                     const colHtml = (el.children || []).map(col => {
                         const inner = col.map(c => generateElementHTML(c)).join('');
                         return `<div style="flex:1;min-width:0;">${inner || '&nbsp;'}</div>`;
                     }).join('');
-                    return `  <div style="display:flex;gap:1em;padding:0.6em 1.2em;${styStr}">${colHtml}</div>\n`;
+                    return `  <div id="${el.id}" style="display:flex;gap:1em;padding:0.6em 1.2em;${styStr}">${colHtml}</div>\n`;
                 }
                 case 'section-nav':
-                    return `  <nav style="display:flex;align-items:center;justify-content:space-between;padding:1em 1.8em;border-bottom:1px solid #eee;${styStr}"><div style="font-size:1.3em;font-weight:800;color:#111;">${escHtml(el.brandName)}</div><div style="display:flex;gap:1.5em;">${(el.navLinks||[]).map(l=>{
+                    return `  <nav id="${el.id}" style="display:flex;align-items:center;justify-content:space-between;padding:1em 1.8em;border-bottom:1px solid #eee;${styStr}"><div style="font-size:1.3em;font-weight:800;color:#111;" data-i18n-field="brandName" data-en-text="${escHtml(el.brandName)}">${escHtml(el.brandName)}</div><div style="display:flex;gap:1.5em;">${(el.navLinks||[]).map(l=>{
                         const parts = l.split('|');
                         const text = parts[0] ? parts[0].trim() : '';
                         const url = parts[1] ? parts[1].trim() : '#';
                         return `<a href="${escHtml(url)}" style="font-size:0.9em;color:#555;font-weight:500;text-decoration:none;">${escHtml(text)}</a>`;
                     }).join('')}</div></nav>\n`;
                 case 'section-hero': {
-                    const heroBg = el.heroBg || (el.styles && (el.styles.background || el.styles.backgroundColor)) || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                    const heroTextColor = el.heroTextColor || (el.styles && el.styles.color) || '#ffffff';
+                    const heroBg = el.heroBg || (el.styles && (el.styles.background || el.styles.backgroundColor)) || 'transparent';
+                    const heroTextColor = el.heroTextColor || (el.styles && el.styles.color) || 'inherit';
                     const heroBtnBg = el.heroBtnBg || 'white';
                     const heroBtnColor = el.heroBtnColor || '#667eea';
-                    return `  <section style="padding:2.5em 1.8em;text-align:center;background:${heroBg};color:${heroTextColor};${styStr}"><h1 style="font-size:2.4em;font-weight:800;margin-bottom:0.5em;color:inherit;line-height:1.2;">${escHtml(el.heroTitle)}</h1><p style="font-size:1.05em;opacity:0.9;margin-bottom:1em;max-width:600px;margin-left:auto;margin-right:auto;color:inherit;line-height:1.5;">${escHtml(el.heroSubtitle)}</p><button style="padding:0.75em 2em;background:${heroBtnBg};color:${heroBtnColor};border:none;border-radius:8px;font-size:0.95em;font-weight:600;cursor:pointer;">${escHtml(el.heroBtnText)}</button></section>\n`;
+                    return `  <section id="${el.id}" style="padding:2.5em 1.8em;text-align:center;background:${heroBg};color:${heroTextColor};${styStr}"><h1 style="font-size:2.4em;font-weight:800;margin-bottom:0.5em;color:inherit;line-height:1.2;" data-i18n-field="heroTitle" data-en-text="${escHtml(el.heroTitle)}">${escHtml(el.heroTitle)}</h1><p style="font-size:1.05em;opacity:0.9;margin-bottom:1em;max-width:600px;margin-left:auto;margin-right:auto;color:inherit;line-height:1.5;" data-i18n-field="heroSubtitle" data-en-text="${escHtml(el.heroSubtitle)}">${escHtml(el.heroSubtitle)}</p><button style="padding:0.75em 2em;background:${heroBtnBg};color:${heroBtnColor};border:none;border-radius:8px;font-size:0.95em;font-weight:600;cursor:pointer;" data-i18n-field="heroBtnText" data-en-text="${escHtml(el.heroBtnText)}">${escHtml(el.heroBtnText)}</button></section>\n`;
                 }
                 case 'theme-toggle':
-                    return `  <div style="padding:0.6em 1.2em;${styStr}"><button onclick="document.body.classList.toggle('dark-mode')" style="background:#2c312d;color:#fff;border:none;border-radius:20px;padding:0.5em 1.2em;font-size:0.85em;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:0.5em;"><i class="fas fa-moon"></i> <span>Dark / Light</span></button></div>\n`;
+                    return `  <div id="${el.id}" style="padding:0.6em 1.2em;${styStr}"><button onclick="document.body.classList.toggle('dark-mode')" style="background:#2c312d;color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;"><i class="fas fa-moon"></i></button></div>\n`;
                 case 'lang-picker': {
-                    const langs = (el.languages || 'EN | SV | AZ').split('|').map(s => s.trim()).filter(Boolean);
-                    return `  <div style="padding:0.6em 1.2em;${styStr}"><div style="display:inline-flex;background:rgba(0,0,0,0.05);border-radius:6px;padding:3px;gap:4px;border:1px solid #ddd;">${langs.map((l, i) => `<span style="padding:0.3em 0.7em;font-size:0.8em;font-weight:600;border-radius:4px;background:${i===0?'#5e6b55':'transparent'};color:${i===0?'#fff':'#333'};cursor:pointer;">${escHtml(l)}</span>`).join('')}</div></div>\n`;
+                    const langs = siteLanguages;
+                    return `  <div id="${el.id}" style="padding:0.6em 1.2em;${styStr}"><div style="display:inline-flex;background:rgba(0,0,0,0.05);border-radius:6px;padding:3px;gap:4px;border:1px solid #ddd;">${langs.map((l, i) => `<span class="lang-btn" data-lang="${escHtml(l.toLowerCase())}" onclick="switchLanguage('${escHtml(l.toLowerCase())}')" style="padding:0.3em 0.7em;font-size:0.8em;font-weight:600;border-radius:4px;background:${i===0?'#5e6b55':'transparent'};color:${i===0?'#fff':'#333'};cursor:pointer;">${escHtml(l.toUpperCase())}</span>`).join('')}</div></div>\n`;
                 }
                 case 'section-cards':
-                    return `  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2em;padding:1.2em;${styStr}">${(el.cards||[]).map((c, ci)=>{
+                    return `  <div id="${el.id}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2em;padding:1.2em;${styStr}">${(el.cards||[]).map((c, ci)=>{
                         const imgHtml = c.imgSrc
                             ? `<img src="${escHtml(c.imgSrc)}" alt="${escHtml(c.title)}" style="width:100%;height:100%;object-fit:cover;">`
                             : `<div style="height:100%;background:linear-gradient(135deg,#f0f0f5,#e0e0ea);display:flex;align-items:center;justify-content:center;color:#999;font-size:1.5em;"><i class="fas fa-${['palette','code','headset','star','cube','bolt'][ci % 6]}"></i></div>`;
-                        return `<div style="background:white;border-radius:12px;overflow:hidden;border:1px solid #eee;box-shadow:0 2px 8px rgba(0,0,0,0.06);"><div style="height:8em;min-height:50px;">${imgHtml}</div><div style="padding:0.8em;"><h3 style="font-size:1.05em;font-weight:700;margin-bottom:0.3em;color:#222;">${escHtml(c.title)}</h3><p style="font-size:0.85em;color:#777;line-height:1.4;">${escHtml(c.desc)}</p></div></div>`;
+                        return `<div style="background:white;border-radius:12px;overflow:hidden;border:1px solid #eee;box-shadow:0 2px 8px rgba(0,0,0,0.06);"><div style="height:8em;min-height:50px;">${imgHtml}</div><div style="padding:0.8em;"><h3 style="font-size:1.05em;font-weight:700;margin-bottom:0.3em;color:#222;" data-i18n-field="cards_${ci}_title" data-en-text="${escHtml(c.title)}">${escHtml(c.title)}</h3><p style="font-size:0.85em;color:#777;line-height:1.4;" data-i18n-field="cards_${ci}_desc" data-en-text="${escHtml(c.desc)}">${escHtml(c.desc)}</p></div></div>`;
                     }).join('')}</div>\n`;
                 case 'section-footer':
-                    return `  <footer style="background:#111;color:#aaa;padding:2em 1.8em 1.2em;${styStr}"><div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:1.8em;margin-bottom:1.8em;"><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">${escHtml(el.footerBrand)}</h4><p style="font-size:0.85em;color:#888;">${escHtml(el.footerDesc)}</p></div><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">Məhsul</h4><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Xüsusiyyətlər</a><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Qiymətlər</a></div><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">Şirkət</h4><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Haqqımızda</a><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Blog</a></div><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">Dəstək</h4><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Sənədlər</a><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Əlaqə</a></div></div><div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:1em;font-size:0.78em;text-align:center;">&copy; 2026 ${escHtml(el.footerBrand)}. Bütün hüquqlar qorunur.</div></footer>\n`;
+                    return `  <footer id="${el.id}" style="background:#111;color:#aaa;padding:2em 1.8em 1.2em;${styStr}"><div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:1.8em;margin-bottom:1.8em;"><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;" data-i18n-field="footerBrand" data-en-text="${escHtml(el.footerBrand)}">${escHtml(el.footerBrand)}</h4><p style="font-size:0.85em;color:#888;" data-i18n-field="footerDesc" data-en-text="${escHtml(el.footerDesc)}">${escHtml(el.footerDesc)}</p></div><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">Məhsul</h4><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Xüsusiyyətlər</a><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Qiymətlər</a></div><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">Şirkət</h4><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Haqqımızda</a><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Blog</a></div><div><h4 style="color:white;font-size:0.9em;margin-bottom:0.6em;">Dəstək</h4><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Sənədlər</a><a href="#" style="display:block;color:#888;font-size:0.82em;padding:0.2em 0;">Əlaqə</a></div></div><div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:1em;font-size:0.78em;text-align:center;">&copy; <span data-i18n-field="footerBrand" data-en-text="${escHtml(el.footerBrand)}">${escHtml(el.footerBrand)}</span>. Bütün hüquqlar qorunur.</div></footer>\n`;
                 default:
                     return '';
             }
